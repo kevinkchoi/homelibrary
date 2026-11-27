@@ -65,6 +65,7 @@ function Guide() {
     { id: "app", title: "휴대폰에 앱처럼 설치" },
     { id: "account", title: "내 설정·비밀번호" },
     { id: "faq", title: "자주 묻는 질문" },
+    { id: "copyright", title: "저작권·출처" },
   ];
 
   return (
@@ -289,6 +290,54 @@ function Guide() {
             위의 <b>[의견 보내기]</b> 탭으로 알려 주세요. 운영자가 읽고 답을 남기면 [내가 보낸 의견]에서 볼 수 있습니다.
           </dd>
         </dl>
+      </section>
+
+      {/* 저작권·출처(사용자 요청, 2026-11-27). 알라딘 Open API는 "도서 DB 제공 : 알라딘 인터넷서점" 표기를 요구한다.
+          외부 출처를 늘리거나 빼면(services/booklookup_service.py) 여기도 함께 고칠 것. */}
+      <section id="copyright" className="help-section">
+        <h2>저작권·출처</h2>
+
+        <h3>Home Library 프로그램</h3>
+        <p>
+          © 2026 Kevin Choi. <b>MIT 라이선스</b>로 공개된 오픈소스입니다 — 누구나 자유롭게 쓰고, 고치고, 나눌 수
+          있습니다. 소스 코드:{" "}
+          <a href="https://github.com/kevinkchoi/homelibrary" target="_blank" rel="noopener noreferrer">
+            github.com/kevinkchoi/homelibrary
+          </a>
+        </p>
+
+        <h3>책 정보와 표지</h3>
+        <ul>
+          <li>
+            도서 DB 제공 : <b>알라딘 인터넷서점</b>(
+            <a href="https://www.aladin.co.kr" target="_blank" rel="noopener noreferrer">
+              www.aladin.co.kr
+            </a>
+            )
+          </li>
+          <li>함께 찾아보는 곳: Google Books, 카카오 책 검색</li>
+          <li>
+            표지 이미지는 알라딘·교보문고·Amazon 등에서 가져오며, <b>저작권은 각 출판사와 저작권자에게</b> 있습니다.
+            이 도서관에서 책을 알아보는 용도로만 쓰고, 다른 곳에 옮겨 싣거나 공개하지 마세요.
+          </li>
+        </ul>
+
+        <h3>AI 기능</h3>
+        <p>표지 사진 인식과 새책 추천은 Anthropic의 <b>Claude</b>를 사용합니다. 결과가 틀릴 수 있으니 확인해 주세요.</p>
+
+        <h3>내가 쓴 서평</h3>
+        <p>
+          서평의 저작권은 <b>쓴 사람</b>에게 있습니다.
+          {personal
+            ? " 내 도서관의 멤버만 볼 수 있고, 사이트 운영자 화면에도 나오지 않습니다."
+            : " 이 서재를 함께 쓰는 가족 모두가 볼 수 있습니다."}
+        </p>
+
+        <h3>함께 쓴 오픈소스</h3>
+        <p className="help-small">
+          React, React Router, react-markdown, ZXing(바코드 인식), FastAPI, SQLAlchemy, Alembic, PostgreSQL, Pillow,
+          nginx 등 — 각 프로젝트의 라이선스를 따릅니다.
+        </p>
       </section>
     </div>
   );

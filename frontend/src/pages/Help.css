@@ -229,3 +229,9 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* 저작권·출처의 오픈소스 목록처럼 덜 중요한 글 */
+.help-small {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
