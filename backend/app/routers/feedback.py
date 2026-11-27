@@ -10,6 +10,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.auth.deps import get_current_user
+from app.config import settings
 from app.database import get_db
 from app.models.feedback import CATEGORIES, Feedback
 from app.models.user import User
@@ -19,6 +20,9 @@ from app.services import notify
 router = APIRouter(prefix="/api/feedback", tags=["feedback"])
 
 CATEGORY_LABEL = {"bug": "버그", "idea": "기능 제안", "praise": "칭찬", "other": "기타"}
+# 두 서버(가족용 family · 공개용 personal)가 **같은 텔레그램 방**으로 보내므로 어디서 온 의견인지 붙인다(2026-11-27).
+# 새 환경변수를 두지 않고 모드로 가른다 — 한 모드에 서버가 하나씩이라 충분하다.
+SITE_LABEL = {"family": "가족 서버", "personal": "공개 서비스"}
 DAILY_LIMIT = 20  # 한 사람이 하루에 보낼 수 있는 수 — 실수로 여러 번 누르거나 장난으로 쏟아지는 것을 막는다
 
 
@@ -48,10 +52,17 @@ def send_feedback(
     # 응답을 기다리게 하지 않도록 뒤에서 보낸다
     background.add_task(
         notify.send_telegram,
-        f"📚 Home Library 새 의견 [{CATEGORY_LABEL.get(item.category, item.category)}] — {item.username}\n\n"
-        f"{item.body[:1500]}",
+        alert_text(item),
     )
     return item
+
+
+def alert_text(item: Feedback) -> str:
+    site = SITE_LABEL.get(settings.library_mode.strip().lower(), settings.library_mode)
+    return (
+        f"📚 Home Library({site}) 새 의견 [{CATEGORY_LABEL.get(item.category, item.category)}] — {item.username}\n\n"
+        f"{item.body[:1500]}"
+    )
 
 
 @router.get("/mine", response_model=list[FeedbackOut])
