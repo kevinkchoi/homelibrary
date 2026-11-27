@@ -42,7 +42,8 @@ def check(ok: bool, label: str) -> bool:
 
 def call(method, path, token=None, json_body=None, form=None, files=None, raw=None, ctype=None):
     url = API + path
-    headers = {}
+    # Cloudflare는 파이썬 기본 User-Agent(Python-urllib)를 봇으로 보고 막는다(error 1010).
+    headers = {"User-Agent": "Mozilla/5.0 (compatible; HomeLibrary-isolation-check/1.0)"}
     data = None
     if token:
         headers["Authorization"] = "Bearer " + token
