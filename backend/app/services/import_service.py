@@ -181,7 +181,7 @@ def import_from_upload(db: Session, user: User, filename: str, data: bytes, fmt:
                 existing.cover_image_path = cover_image_path
             updated += 1
         else:
-            db.add(Book(owner_id=owner_id, cover_image_path=cover_image_path, **fields))
+            db.add(Book(owner_id=owner_id, library_id=user.library_id, cover_image_path=cover_image_path, **fields))
             created += 1
 
     if zf is not None:

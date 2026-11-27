@@ -52,3 +52,9 @@
 .auth-note {
   margin: -4px 0 12px;
 }
+
+.auth-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: normal;
+}

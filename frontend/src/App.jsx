@@ -17,6 +17,11 @@ import Recommend from "./pages/Recommend.jsx";
 import BookReview from "./pages/BookReview.jsx";
 import Install from "./pages/Install.jsx";
 import Settings from "./pages/Settings.jsx";
+import Help from "./pages/Help.jsx";
+import Library from "./pages/Library.jsx";
+import AdminSite from "./pages/AdminSite.jsx";
+import AdminFeedback from "./pages/AdminFeedback.jsx";
+import WelcomeModal from "./components/WelcomeModal.jsx";
 
 // wide: 책 목록처럼 **표**가 나오는 화면. 화면 폭을 다 써야 열이 안 눌린다.
 // 폼이나 안내 글은 좁게 두는 편이 읽기 좋아 기본은 1100px 그대로다.
@@ -29,6 +34,8 @@ function ProtectedLayout({ children, wide = false }) {
     <>
       <NavBar />
       <main className={"container" + (wide ? " container-wide" : "")}>{children}</main>
+      {/* 처음 로그인한 사람에게 한 번 — 닫으면 서버에 적혀 다른 기기에서도 다시 안 뜬다 */}
+      <WelcomeModal />
     </>
   );
 }
@@ -149,6 +156,38 @@ export default function App() {
         element={
           <ProtectedLayout>
             <Settings />
+          </ProtectedLayout>
+        }
+      />
+      <Route
+        path="/help"
+        element={
+          <ProtectedLayout>
+            <Help />
+          </ProtectedLayout>
+        }
+      />
+      <Route
+        path="/library"
+        element={
+          <ProtectedLayout>
+            <Library />
+          </ProtectedLayout>
+        }
+      />
+      <Route
+        path="/admin/site"
+        element={
+          <ProtectedLayout>
+            <AdminSite />
+          </ProtectedLayout>
+        }
+      />
+      <Route
+        path="/admin/feedback"
+        element={
+          <ProtectedLayout>
+            <AdminFeedback />
           </ProtectedLayout>
         }
       />

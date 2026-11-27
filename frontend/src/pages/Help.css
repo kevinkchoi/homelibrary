@@ -1,0 +1,231 @@
+.help-page h1 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+/* 탭 — 좁은 폰에서도 한 줄. 넘치면 줄바꿈(가로 넘침을 만들지 않는다) */
+.help-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.help-tab {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.help-tab.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.help-toc {
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.help-toc ol {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  columns: 2 220px;
+  column-gap: 24px;
+}
+
+.help-toc li {
+  margin-bottom: 4px;
+  break-inside: avoid;
+}
+
+.help-section {
+  margin-bottom: 22px;
+  line-height: 1.65;
+  font-size: 15px;
+  /* 상단 바(sticky)에 가려지지 않게 — 차례에서 눌러 왔을 때 */
+  scroll-margin-top: calc(var(--hdr-total, 57px) + 8px);
+}
+
+.help-section h2 {
+  font-size: 17px;
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.help-section h3 {
+  font-size: 15px;
+  margin: 12px 0 4px;
+}
+
+.help-section p,
+.help-section ul,
+.help-section ol {
+  margin: 0 0 8px;
+}
+
+.help-section ul,
+.help-section ol {
+  padding-left: 20px;
+}
+
+.help-section code {
+  font-size: 13px;
+  background: var(--color-bg);
+  padding: 1px 5px;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+.help-tip,
+.help-note {
+  font-size: 14px;
+  background: var(--color-bg);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.help-faq dt {
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.help-faq dd {
+  margin: 2px 0 0;
+  color: var(--color-text-muted);
+}
+
+/* 의견 보내기 */
+.help-lead {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 10px;
+}
+
+.help-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.help-chip {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.help-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.help-chip.active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.help-feedback textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 15px;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.help-feedback-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.help-count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* 내가 보낸 의견 */
+.help-empty {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.help-mine {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.help-mine li {
+  margin-bottom: 10px;
+}
+
+.help-mine-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.help-status {
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.help-status.status-reviewing {
+  background: #fff4d6;
+  color: #8a6100;
+}
+
+.help-status.status-done {
+  background: #dcf5e3;
+  color: #1d6b39;
+}
+
+.help-status.status-declined {
+  background: #eceff3;
+  color: #5b6472;
+}
+
+.help-mine-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+.help-reply {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--color-primary);
+  background: var(--color-bg);
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+}
+
+.help-reply p {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

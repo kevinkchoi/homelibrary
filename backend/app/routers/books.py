@@ -523,7 +523,7 @@ def _acknowledged_keys(db: Session, user: User) -> set[tuple[str, str]]:
     rows = library_scope.scope(
         db.query(DuplicateAcknowledgement.reason, DuplicateAcknowledgement.key),
         user,
-        DuplicateAcknowledgement.owner_id,
+        DuplicateAcknowledgement.library_id,
     ).all()
     return {(r[0], r[1]) for r in rows}
 
@@ -599,12 +599,12 @@ def list_duplicates(
 def _save_acknowledgements(db: Session, user: User, pairs: list[tuple[str, str]]) -> int:
     """(reason, key) 묶음들을 '다른 책'으로 표시한다. 이미 표시된 것은 건너뛴다."""
     existing = _acknowledged_keys(db, user)
-    owner = library_scope.owner_id_for(user)
+    lib = library_scope.library_id_for(user)
     added = 0
     for reason, key in pairs:
         if (reason, key) in existing:
             continue
-        db.add(DuplicateAcknowledgement(reason=reason, key=key, owner_id=owner))
+        db.add(DuplicateAcknowledgement(reason=reason, key=key, owner_id=user.id, library_id=lib))
         existing.add((reason, key))
         added += 1
     if added:
@@ -620,6 +620,7 @@ def acknowledge_duplicate(
     current_user: User = Depends(get_current_user),
 ):
     """이 묶음은 중복이 아니라고 표시한다. 앞으로 서재 점검과 등록 경고에서 제외된다."""
+    library_scope.ensure_can_edit(current_user)
     added = _save_acknowledgements(db, current_user, [(payload.reason, payload.key)])
     return DuplicateAckResult(acknowledged=added)
 
@@ -635,6 +636,7 @@ def acknowledge_all_duplicates(
     집에 원래 같은 책이 여러 권 있는 경우, 한 묶음씩 누르는 것보다 이게 편하다.
     되돌리려면 [다시 보기]에서 묶음별로 해제하면 된다.
     """
+    library_scope.ensure_can_edit(current_user)
     current = list_duplicates(include_acknowledged=False, db=db, current_user=current_user)
     added = _save_acknowledgements(db, current_user, [(g.reason, g.key) for g in current.groups])
     return DuplicateAckResult(acknowledged=added)
@@ -648,9 +650,10 @@ def unacknowledge_duplicate(
     current_user: User = Depends(get_current_user),
 ):
     """'다른 책' 표시를 되돌려 다시 중복 검사 대상으로 만든다."""
+    library_scope.ensure_can_edit(current_user)
     removed = (
         library_scope.scope(
-            db.query(DuplicateAcknowledgement), current_user, DuplicateAcknowledgement.owner_id
+            db.query(DuplicateAcknowledgement), current_user, DuplicateAcknowledgement.library_id
         )
         .filter(
             DuplicateAcknowledgement.reason == payload.reason,
@@ -673,7 +676,8 @@ def list_broken_covers(
     books = (
         library_scope.books(db, current_user)
         .filter(Book.cover_image_path.isnot(None))
-        .order_by(Book.title.asc())
+        # 같은 제목(같은 책 여러 권)끼리 순서가 매번 달라지지 않게 id로 한 번 더 정렬
+        .order_by(Book.title.asc(), Book.id.asc())
         .all()
     )
     missing = [b for b in books if not image_exists(b.cover_image_path)]
@@ -692,6 +696,7 @@ def repair_broken_covers(
 
     한 권마다 외부 API를 호출하므로 `limit`으로 한 번의 요청 시간을 제한한다.
     """
+    library_scope.ensure_can_edit(current_user)
     books = library_scope.books(db, current_user).filter(Book.cover_image_path.isnot(None)).all()
     broken = [b for b in books if not image_exists(b.cover_image_path)][:limit]
 
@@ -812,6 +817,7 @@ def rename_category(
     (`"소설, 영미소설"`에서 영미소설→소설이면 `"소설"` 하나로 합쳐진다).
     그래서 SQL 한 방이 아니라 해당하는 책을 읽어 고쳐 쓴다.
     """
+    library_scope.ensure_can_edit(current_user)
     to_name = category_service.normalize(payload.to_name)
 
     if payload.from_name is None:
@@ -856,6 +862,7 @@ def bulk_set_shelf(
     책장 앞에서 "이 칸에 있는 책들"을 골라 한 번에 넣는 용도. 한 권씩 열어 고치면
     845권을 도저히 채울 수 없다.
     """
+    library_scope.ensure_can_edit(current_user)
     if not payload.ids:
         return BulkUpdateResult(updated=0)
     shelf = (payload.shelf_location or "").strip() or None
@@ -1000,6 +1007,7 @@ def create_book(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    library_scope.ensure_can_edit(current_user)
     # 파일이 직접 첨부되면 그것을 저장, 스캔/표지검색 단계에서 이미 저장된 경로(cover_image_path)가
     # 있으면 재사용, 둘 다 없으면(직접 입력으로 새책을 추가하는 경우) 인터넷에서 표지를 자동으로 찾아본다
     if cover_image is not None and cover_image.filename:
@@ -1009,7 +1017,12 @@ def create_book(
     else:
         cover_image_path = _auto_cover_lookup(fields["title"], fields["author"])
 
-    book = Book(owner_id=current_user.id, cover_image_path=cover_image_path, **fields)
+    book = Book(
+        owner_id=current_user.id,
+        library_id=current_user.library_id,
+        cover_image_path=cover_image_path,
+        **fields,
+    )
     db.add(book)
     db.commit()
     db.refresh(book)
@@ -1026,6 +1039,7 @@ def update_book(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    library_scope.ensure_can_edit(current_user)
     book = _own_book_or_404(db, current_user, book_id)
 
     for key, value in fields.items():
@@ -1058,6 +1072,7 @@ def bulk_delete_books(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    library_scope.ensure_can_edit(current_user)
     books = library_scope.books(db, current_user).filter(Book.id.in_(payload.ids)).all()
     for book in books:
         delete_image(book.cover_image_path)
@@ -1071,6 +1086,7 @@ def delete_book(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    library_scope.ensure_can_edit(current_user)
     book = _own_book_or_404(db, current_user, book_id)
     delete_image(book.cover_image_path)
     db.delete(book)

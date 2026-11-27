@@ -6,6 +6,8 @@
 
 import logging
 
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -79,3 +81,11 @@ def change_password(
         raise HTTPException(status_code=400, detail="지금 비밀번호가 맞지 않습니다.")
     current_user.password_hash = hash_password(payload.new_password)
     db.commit()
+
+
+@router.put("/welcome-seen", status_code=status.HTTP_204_NO_CONTENT)
+def mark_welcome_seen(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """첫 로그인 환영 안내를 닫았다. 다른 기기에서 다시 뜨지 않도록 서버에 적는다(브라우저 저장소가 아니라)."""
+    if current_user.welcome_seen_at is None:
+        current_user.welcome_seen_at = datetime.now(timezone.utc)
+        db.commit()

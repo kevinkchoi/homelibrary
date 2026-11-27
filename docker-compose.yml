@@ -42,6 +42,9 @@ services:
       LIBRARY_MODE: ${LIBRARY_MODE:-family}
       SIGNUP_INVITE_CODE: ${SIGNUP_INVITE_CODE:-}
       USER_KEY_SECRET: ${USER_KEY_SECRET:-}
+      SITE_BACKUP_SECRET: ${SITE_BACKUP_SECRET:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
     volumes:
       - homelibrary_images:/app/storage/images
     depends_on:

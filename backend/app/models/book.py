@@ -43,3 +43,8 @@ class Book(Base):
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     owner = relationship("User", back_populates="books")
+    # 이 책이 속한 도서관(personal 모드에서 누가 볼 수 있는지를 정한다, 0010).
+    # owner_id는 "누가 넣었나"로만 남는다 — 멤버가 넣은 책도 도서관 전체의 책이다.
+    library_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("libraries.id", ondelete="CASCADE"), nullable=True, index=True
+    )

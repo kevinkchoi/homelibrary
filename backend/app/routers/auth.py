@@ -10,6 +10,7 @@ from app.auth.security import create_access_token, hash_password, verify_passwor
 from app.config import settings
 from app.database import get_db
 from app.models.user import User
+from app.services import library_service
 from app.schemas.user import PublicConfig, Token, UserOut, UserRegister
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -78,19 +79,23 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
 
     - 계정이 **하나도 없으면** 누구든 첫 계정을 만들 수 있고 관리자(운영자)가 된다.
     - **family 모드**: 그 뒤로는 닫혀 있다(2026-10-11). 가족 계정은 관리자가 만든다.
-    - **personal 모드**(homelibrary.kr): **초대 코드**가 맞아야 가입된다(사용자 결정, 2026-11-27).
-      각자 빈 서재로 시작한다. 이메일은 선택.
+    - **personal 모드**(homelibrary.kr): **초대 코드**가 맞아야 가입된다(사용자 결정, 2026-11-27). 이메일은 선택.
+      - **사이트 초대 코드**(.env의 SIGNUP_INVITE_CODE) → **새 도서관**이 생기고 그 주인이 된다
+      - **도서관 초대 코드**(`lib-xxxx-xxxx`, 도서관 주인이 [우리 도서관]에서 만든다) → **그 도서관의 멤버**가 된다.
+        역할은 주인이 코드를 만들 때 정해 둔 것(편집/보기만/공동 관리자)
 
     로그인·가입은 nginx에서 접속자별 분당 10회로 제한된다(frontend/nginx.conf) — 코드 대입을 막는다.
     """
     is_first_user = db.query(User).count() == 0
+    join_library = None
     if not is_first_user:
         if not settings.personal_mode:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="회원가입은 닫혀 있습니다. 관리자에게 계정을 요청해주세요.",
             )
-        if not _invite_ok(payload.invite_code):
+        join_library = library_service.find_by_invite_code(db, payload.invite_code)
+        if join_library is None and not _invite_ok(payload.invite_code):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="초대 코드가 맞지 않습니다.",
@@ -104,6 +109,13 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
         is_admin=is_first_user,
     )
     db.add(user)
+    db.flush()
+    if join_library is not None:
+        user.library_id = join_library.id
+        user.library_role = join_library.invite_role
+    else:
+        # 첫 계정(모드 무관)이거나 사이트 초대 코드로 가입 → 자기 도서관의 주인
+        library_service.create_library_for(db, user)
     db.commit()
     db.refresh(user)
 

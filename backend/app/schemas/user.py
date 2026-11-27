@@ -35,8 +35,12 @@ class UserOut(BaseModel):
     id: int
     username: str
     email: EmailStr | None = None
+    # is_admin = **사이트 운영자**(family 모드에선 가족 관리자). 도서관 안의 권한은 library_role.
     is_admin: bool
     created_at: datetime
+    library_id: int | None = None
+    library_role: str = "owner"
+    welcome_seen_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -80,3 +84,53 @@ class PublicConfig(BaseModel):
     library_mode: str
     signup_enabled: bool
     signup_requires_invite: bool
+
+
+# ── 도서관(personal 모드) ─────────────────────────────────────────────────
+class LibraryMember(BaseModel):
+    id: int
+    username: str
+    role: str
+    created_at: datetime
+    book_count: int = 0  # 이 사람이 넣은 책 수
+
+
+class LibraryInfo(BaseModel):
+    id: int
+    name: str
+    my_role: str
+    can_manage: bool
+    book_count: int
+    members: list[LibraryMember]
+    # 관리자(주인·공동 관리자)에게만 보인다
+    invite_code: str | None = None
+    invite_role: str | None = None
+
+
+class LibraryRename(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+
+
+class MemberCreate(BaseModel):
+    username: str = Field(min_length=3, max_length=50)
+    password: str = Field(min_length=6, max_length=100)
+    email: EmailStr | None = None
+    role: str = "editor"
+
+    @field_validator("username", mode="before")
+    @classmethod
+    def _strip_username(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def _blank_email_is_none(cls, v):
+        return None if isinstance(v, str) and not v.strip() else v
+
+
+class MemberRole(BaseModel):
+    role: str
+
+
+class InviteCodeRequest(BaseModel):
+    role: str = "editor"

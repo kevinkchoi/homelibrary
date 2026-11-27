@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
+from app import library_scope
 from app.auth.deps import get_current_user
 from app.database import get_db
 from app.models.user import User
@@ -59,6 +60,7 @@ async def import_excel(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    library_scope.ensure_can_edit(current_user)  # 가져오기는 책을 넣고 고친다
     data = await file.read()
     try:
         result = import_from_upload(db, current_user, file.filename or "", data, "excel")
@@ -75,6 +77,7 @@ async def import_csv(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    library_scope.ensure_can_edit(current_user)  # 가져오기는 책을 넣고 고친다
     data = await file.read()
     try:
         result = import_from_upload(db, current_user, file.filename or "", data, "csv")

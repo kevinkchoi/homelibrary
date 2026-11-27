@@ -2,19 +2,23 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { listBooks } from "../api/books";
-import { aiAvailable, useAiStatus } from "../utils/serverConfig.js";
+import { aiAvailable, isPersonal, useAiStatus, useServerConfig } from "../utils/serverConfig.js";
+import { canEdit } from "../utils/permissions.js";
 import "./Sidebar.css";
 
 // 한 곳에서만 고치면 되도록 링크를 표로 뽑아 둔다.
 const LINKS = [
   { to: "/", label: "홈", icon: "🏠", end: true },
   { to: "/search", label: "책 찾기", icon: "🔍" },
-  { to: "/add", label: "새책 추가", icon: "➕" },
-  { to: "/scan", label: "바코드 스캔", icon: "📷" },
+  { to: "/add", label: "새책 추가", icon: "➕", needsEdit: true },
+  { to: "/scan", label: "바코드 스캔", icon: "📷", needsEdit: true },
   // Claude가 필요한 기능 — personal 모드(homelibrary.kr)에서 자기 키가 없으면 숨긴다
   { to: "/recommend", label: "새책 추천", icon: "✨", needsAi: true },
+  // 가족·친구와 함께 쓰는 도서관(개인 서재 서버에서만)
+  { to: "/library", label: "우리 도서관", icon: "👪", personalOnly: true },
   { to: "/admin", label: "관리", icon: "⚙️" },
   { to: "/settings", label: "내 설정", icon: "👤" },
+  { to: "/help", label: "도움말 · 의견", icon: "❓" },
 ];
 
 /**
@@ -29,7 +33,14 @@ export default function Sidebar({ open, onClose }) {
   const { user, logout } = useAuth();
   const [total, setTotal] = useState(null);
   const ai = useAiStatus();
-  const links = LINKS.filter((link) => !link.needsAi || aiAvailable(ai));
+  const personal = isPersonal(useServerConfig());
+  const links = LINKS.filter(
+    (link) =>
+      (!link.needsAi || aiAvailable(ai)) &&
+      (!link.personalOnly || personal) &&
+      // '보기만' 멤버에게는 책을 넣는 메뉴를 감춘다(서버도 막는다)
+      (!link.needsEdit || canEdit(user, personal)),
+  );
 
   useEffect(() => {
     if (!open) return undefined;

@@ -36,6 +36,12 @@ class Settings(BaseSettings):
     # 사용자가 넣은 Claude API 키를 DB에 **암호화해** 둘 때 쓰는 비밀값.
     # 비우면 jwt_secret에서 파생한다(그러면 JWT_SECRET을 바꿀 때 저장된 키도 못 읽게 된다 — 다시 넣으면 됨).
     user_key_secret: str = ""
+    # 운영자의 도서관 백업 파일(services/site_backup.py)을 암호화하는 비밀값. 비우면 JWT_SECRET에서 파생.
+    # ⚠️ 잃으면 그 키로 만든 백업은 못 연다 — 서버 밖에도 적어 둘 것.
+    site_backup_secret: str = ""
+    # 새 의견이 오면 운영자에게 텔레그램으로 알린다(services/notify.py). 둘 다 있어야 보낸다.
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
 
     @property
     def personal_mode(self) -> bool:

@@ -93,11 +93,11 @@ def login(username, password):
     return body.get("access_token") if status == 200 else None
 
 
-def register(username, invite):
+def register(username, invite, email=""):
     return call(
         "POST",
         "/auth/register",
-        json_body={"username": username, "email": "", "password": "pw-" + username, "invite_code": invite},
+        json_body={"username": username, "email": email, "password": "pw-" + username, "invite_code": invite},
     )
 
 
@@ -122,7 +122,7 @@ def main() -> int:
     print("[가입]")
     check(register(f"iso_x_{tag}", "")[0] == 403, "초대 코드 없이 가입 → 403")
     check(register(f"iso_y_{tag}", "틀린코드")[0] == 403, "틀린 초대 코드 → 403")
-    sa, _ = register(ua, INVITE)
+    sa, _ = register(ua, INVITE, email=f"{ua}@example.org")  # 운영자에게 이메일이 안 보이는지 보려고
     sb, _ = register(ub, INVITE)
     if not check(sa == 201 and sb == 201, "초대 코드로 A·B 가입 → 201"):
         return 1
@@ -213,7 +213,122 @@ def main() -> int:
     s, _ = call("PUT", "/me/password", tb, json_body={"current_password": "pw-" + ub, "new_password": "newpw123"})
     check(s == 204 and login(ub, "newpw123") and not login(ub, "pw-" + ub), "바꾼 비밀번호로만 로그인")
 
+    print("[환영 안내]")
+    s, me = call("GET", "/auth/me", ta)
+    check(s == 200 and me.get("welcome_seen_at") is None, "처음 들어온 사람은 환영 안내를 아직 안 봤다")
+    s, _ = call("PUT", "/me/welcome-seen", ta)
+    s2, me = call("GET", "/auth/me", ta)
+    check(s == 204 and me.get("welcome_seen_at"), "환영 안내를 닫으면 서버에 기록된다(다른 기기에서 다시 안 뜸)")
+
+    print("[도서관 공유 — 주인이 멤버를 직접 만든다]")
+    s, lib = call("GET", "/library", ta)
+    check(s == 200 and lib["my_role"] == "owner" and lib["can_manage"] and len(lib["members"]) == 1,
+          "가입하면 자기 도서관의 주인")
+    a2, a3 = f"iso_a2_{tag}", f"iso_a3_{tag}"
+    s, lib = call("POST", "/library/members", ta, json_body={"username": a2, "password": "pw-" + a2, "role": "editor"})
+    check(s == 201 and any(m["username"] == a2 and m["role"] == "editor" for m in lib["members"]), "주인이 편집 멤버를 만든다")
+    s, lib = call("POST", "/library/members", ta, json_body={"username": a3, "password": "pw-" + a3, "role": "viewer"})
+    check(s == 201, "주인이 보기만 멤버를 만든다")
+    ids = {m["username"]: m["id"] for m in lib["members"]}
+    t2, t3 = login(a2, "pw-" + a2), login(a3, "pw-" + a3)
+    s, body = call("GET", f"/books/{aid}", t2)
+    check(s == 200 and body["title"] == a_title, "편집 멤버가 주인의 책을 본다(같은 도서관)")
+    a2_book = make_book(t2, f"A2가넣은책{tag}", "", "", "")
+    s, body = call("GET", f"/books/{a2_book['id']}", ta)
+    check(s == 200, "멤버가 넣은 책을 주인도 본다")
+    s, _ = call("PUT", f"/books/{aid}", t2, form={"title": a_title, "author": "격리시험", "publisher": "시험사",
+                                                    "shelf_location": f"A책꽂이{tag}", "category": f"A분류{tag}"}, files={})
+    check(s == 200, "편집 멤버는 책을 고칠 수 있다")
+    s, _ = call("GET", f"/books/{aid}", t3)
+    check(s == 200, "보기만 멤버도 책을 본다")
+    s, _ = call("PUT", f"/books/{aid}", t3, form={"title": "보기만이고침", "author": "x", "publisher": "x"}, files={})
+    check(s == 403, "보기만 멤버는 책을 고칠 수 없다(403)")
+    s, _ = call("POST", "/books", t3, form={"title": "보기만추가", "author": "x", "publisher": "x"}, files={})
+    check(s == 403, "보기만 멤버는 책을 넣을 수 없다(403)")
+    s, _ = call("DELETE", f"/books/{aid}", t3)
+    check(s == 403, "보기만 멤버는 책을 지울 수 없다(403)")
+    s, _ = call("POST", "/library/members", t2, json_body={"username": f"iso_x2_{tag}", "password": "pw123456"})
+    check(s == 403, "편집 멤버는 멤버를 만들 수 없다(주인·공동 관리자만)")
+    s, _ = call("GET", f"/books/{a2_book['id']}", tb)
+    check(s == 404, "다른 도서관(B)은 멤버가 넣은 책도 못 본다")
+    s, _ = call("PUT", f"/library/members/{ids[a2]}/role", tb, json_body={"role": "viewer"})
+    check(s in (403, 404), "B는 A 도서관의 멤버를 건드릴 수 없다")
+    s, _ = call("PUT", f"/library/members/{ids[a3]}/role", ta, json_body={"role": "owner"})
+    check(s == 400, "멤버를 주인으로 만들 수는 없다")
+    s, _ = call("PUT", f"/library/members/{ids[a2]}/password", ta, json_body={"password": "reset-pw-1"})
+    check(s == 204 and login(a2, "reset-pw-1") and not login(a2, "pw-" + a2), "주인이 멤버 비밀번호를 재설정한다")
+
+    print("[도서관 공유 — 도서관 초대 코드]")
+    s, lib = call("POST", "/library/invite-code", ta, json_body={"role": "viewer"})
+    code = lib.get("invite_code") if s == 200 else None
+    check(bool(code) and code.startswith("lib-") and lib["invite_role"] == "viewer", "주인이 도서관 초대 코드를 만든다")
+    s, lib_b = call("GET", "/library", tb)
+    check(s == 200 and lib_b.get("invite_code") is None, "다른 도서관 사람에게 A의 코드가 보이지 않는다")
+    uc = f"iso_c_{tag}"
+    s, _ = register(uc, code)
+    tc = login(uc, "pw-" + uc)
+    s2, me = call("GET", "/auth/me", tc)
+    check(s == 201 and me["library_id"] == lib["id"] and me["library_role"] == "viewer", "코드로 가입하면 그 도서관에 '보기만'으로 들어간다")
+    s, _ = call("GET", f"/books/{aid}", tc)
+    check(s == 200, "코드로 들어온 사람도 주인의 책을 본다")
+    s, lib = call("DELETE", "/library/invite-code", ta)
+    s2, _ = register(f"iso_d_{tag}", code)
+    check(s == 200 and s2 == 403, "코드를 끄면 그 코드로는 더 가입할 수 없다")
+    s, lib = call("DELETE", f"/library/members/{ids[a2]}", ta)
+    s2, body = call("GET", f"/books/{a2_book['id']}", ta)
+    # (등록자 표시가 비워지는지는 API에 owner_id가 없어 여기서는 볼 수 없다 — library_service.remove_member)
+    check(s == 200 and login(a2, "reset-pw-1") is None and s2 == 200,
+          "멤버를 빼면 계정은 지워지고 그 사람이 넣은 책은 도서관에 남는다")
+
+    print("[의견 보내기]")
+    s, fb = call("POST", "/feedback", tb, json_body={"category": "idea", "body": f"시험 의견 {tag}"})
+    check(s == 201 and fb["status"] == "new", "의견을 보낸다")
+    s, mine = call("GET", "/feedback/mine", tb)
+    check(s == 200 and any(f["id"] == fb["id"] for f in mine), "내가 보낸 의견에 보인다")
+    s, mine_a = call("GET", "/feedback/mine", ta)
+    check(s == 200 and all(f["id"] != fb["id"] for f in mine_a), "남의 의견은 내 목록에 없다")
+    s, _ = call("GET", "/admin/feedback", tb)
+    check(s == 403, "일반 사용자는 의견함을 볼 수 없다")
+    s, _ = call("GET", "/admin/libraries", ta)
+    check(s == 403, "일반 사용자(도서관 주인이라도)는 운영자 화면을 볼 수 없다")
+
     if ADMIN:
+        print("[운영자 — 관리하되 빼가지 못한다]")
+        tadm = login(*ADMIN)
+        s, libs = call("GET", "/admin/libraries", tadm)
+        raw = json.dumps(libs, ensure_ascii=False)
+        mine_lib = next((l for l in libs.get("libraries", []) if l["owner_username"] == ua), None) if s == 200 else None
+        check(mine_lib is not None and mine_lib["member_count"] == 3 and mine_lib["book_count"] == 2,
+              "운영자는 도서관·멤버 수·책 수를 본다")
+        check(a_title not in raw and f"{ua}@example.org" not in raw, "운영자 화면에 책 제목·이메일이 없다")
+        s, users = call("GET", "/users", tadm)
+        check(s == 200 and all(u.get("email") is None for u in users), "운영자 사용자 목록에 이메일이 없다")
+        s, _ = call("PUT", f"/users/{me['id']}/password", tadm, json_body={"password": "takeover1"})
+        check(s == 403, "운영자는 남의 비밀번호를 바꿀 수 없다(계정 탈취 방지)")
+        s, raw_backup = call("GET", f"/admin/backup?library_id={mine_lib['id']}", tadm)
+        blob = raw_backup if isinstance(raw_backup, bytes) else json.dumps(raw_backup).encode()
+        check(s == 200 and len(blob) > 100 and a_title.encode() not in blob and ua.encode() not in blob
+              and b"data.json" not in blob, "백업 파일은 암호화돼 있다(제목·아이디가 보이지 않음)")
+        s, items = call("GET", "/admin/feedback", tadm)
+        check(s == 200 and any(f["id"] == fb["id"] for f in items), "운영자 의견함에 들어왔다")
+        s, _ = call("PUT", f"/admin/feedback/{fb['id']}", tadm, json_body={"status": "reviewing", "admin_reply": "검토하겠습니다"})
+        s2, mine = call("GET", "/feedback/mine", tb)
+        check(s == 200 and any(f["id"] == fb["id"] and f["admin_reply"] == "검토하겠습니다" and f["status"] == "reviewing"
+                               for f in mine), "운영자 답이 보낸 사람에게 보인다")
+        s, _ = call("DELETE", f"/admin/libraries/{mine_lib['id']}", tadm)
+        check(s == 204 and login(ua, "pw-" + ua) is None and login(uc, "pw-" + uc) is None,
+              "운영자가 말썽 도서관을 지우면 멤버 모두 로그인 불가")
+        s, res = call("POST", "/admin/restore", tadm, files={"file": ("b.hlbak", blob, "application/octet-stream")})
+        ta2 = login(ua, "pw-" + ua)
+        s2, body = call("GET", "/books?limit=500", ta2) if ta2 else (0, {})
+        titles = {b["title"] for b in body.get("items", [])} if s2 == 200 else set()
+        check(s == 200 and res["books"] == 2 and ta2 and a_title in titles, "암호화 백업으로 도서관이 되돌아온다(주인 로그인·책)")
+        s2, body = call("GET", "/books?limit=500", ta2) if ta2 else (0, {})
+        cover_ok = any(b.get("cover_image_path") == a_cover for b in body.get("items", [])) if s2 == 200 else False
+        check(cover_ok, "표지도 되돌아온다")
+        s, _ = call("POST", "/admin/restore", tadm, files={"file": ("x.hlbak", b"not a backup", "application/octet-stream")})
+        check(s == 400, "이 서버의 백업이 아닌 파일은 거절")
+
         print("[정리: 시험 계정 삭제]")
         tadm = login(*ADMIN)
         s, users = call("GET", "/users", tadm)

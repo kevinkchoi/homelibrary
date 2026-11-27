@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -19,6 +19,14 @@ class User(Base):
     # personal 모드에서 표지 사진 인식·새책 추천은 이 키로만 돈다(운영자 키를 쓰지 않는다).
     # 평문은 저장하지도, 화면에 돌려주지도 않는다 — 끝 4자리만 보여 준다(services/user_keys.py).
     anthropic_api_key_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # 이 사람이 속한 도서관과 그 안의 역할(owner/manager/editor/viewer) — personal 모드(0010).
+    # family 모드에서는 값이 있어도 보지 않는다(모두가 한 서재).
+    library_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("libraries.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    library_role: Mapped[str] = mapped_column(String(10), nullable=False, default="owner")
+    # 첫 로그인 환영 안내를 닫은 시각. NULL이면 다음 로그인 때 환영 메시지를 띄운다(0010).
+    welcome_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

@@ -128,3 +128,14 @@ input, select, textarea {
   border-radius: 8px;
   padding: 16px;
 }
+
+/* 휴대폰(터치)에서 입력칸 글자는 **16px 이상**이어야 한다. 아이폰 Safari는 16px보다 작은 입력칸을 누르면 화면을
+   확대하고, 로그인 뒤에도 **확대된 채로 남아** 다음 화면(환영 안내 등)이 잘려 보였다(2026-11-27 시뮬레이터에서 발견 —
+   처음엔 카드 높이 탓으로 잘못 짚었다). 넓은 화면(마우스)의 모양은 그대로 둔다. */
+@media (hover: none) and (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

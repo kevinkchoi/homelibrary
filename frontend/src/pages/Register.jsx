@@ -39,13 +39,14 @@ export default function Register() {
         <h1>Home Library 계정 만들기</h1>
         {personal && (
           <p className="auth-lead">
-            나만의 서재가 새로 만들어집니다. 다른 사람의 책은 보이지 않고, 내 책도 다른 사람에게 보이지 않습니다.
+            초대 코드로 가입하면 <b>나만의 도서관</b>이 생깁니다. 가족·친구에게서 받은 <b>도서관 코드</b>(lib-…)로
+            가입하면 그 도서관에 함께 들어갑니다. 다른 도서관의 책은 서로 보이지 않습니다.
           </p>
         )}
         {error && <p className="auth-error">{error}</p>}
         {config.signup_requires_invite && (
           <label>
-            초대 코드
+            초대 코드 <span className="auth-hint">— 가족·친구의 도서관 코드(lib-…)를 넣으면 그 도서관에 함께 들어갑니다</span>
             <input
               value={form.inviteCode}
               onChange={(e) => update("inviteCode", e.target.value)}

@@ -7,6 +7,9 @@ import ImageLightbox from "./ImageLightbox.jsx";
 import ReviewMarkdown from "./ReviewMarkdown.jsx";
 import { formatDateTime } from "../utils/date.js";
 import { REVIEW_SAVED_MESSAGE } from "../constants.js";
+import { useAuth } from "../context/AuthContext.jsx";
+import { isPersonal, useServerConfig } from "../utils/serverConfig.js";
+import { canEdit } from "../utils/permissions.js";
 import "./BookDetailModal.css";
 
 export default function BookDetailModal({ bookId, onClose, onUpdated, onDeleted }) {
@@ -14,6 +17,8 @@ export default function BookDetailModal({ bookId, onClose, onUpdated, onDeleted 
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+  const { user } = useAuth();
+  const editable = canEdit(user, isPersonal(useServerConfig()));
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState("");
   // 표지 파일이 사라진 책은 깨진 이미지 대신 "표지 없음"으로 보여준다(관리 → 서재 점검에서 복구)
@@ -152,9 +157,11 @@ export default function BookDetailModal({ bookId, onClose, onUpdated, onDeleted 
               <div className="book-detail-cover book-detail-cover-empty">표지 없음</div>
             )}
             {/* 표지만 바꾸고 싶은 경우가 잦아서 수정 화면으로 바로 가는 버튼을 따로 뒀다 */}
-            <button className="btn secondary book-detail-cover-btn" onClick={() => setEditing(true)}>
-              🖼 표지 바꾸기
-            </button>
+            {editable && (
+              <button className="btn secondary book-detail-cover-btn" onClick={() => setEditing(true)}>
+                🖼 표지 바꾸기
+              </button>
+            )}
             <h2>{book.title}</h2>
             <dl>
               <dt>저자</dt>
@@ -185,9 +192,11 @@ export default function BookDetailModal({ bookId, onClose, onUpdated, onDeleted 
             <section className="book-review">
               <div className="book-review-head">
                 <h3>서평</h3>
-                <button className="btn secondary btn-sm" onClick={openReviewWindow}>
-                  {book.comment ? "서평 전체 보기" : "서평 쓰기"}
-                </button>
+                {(book.comment || editable) && (
+                  <button className="btn secondary btn-sm" onClick={openReviewWindow}>
+                    {book.comment ? "서평 전체 보기" : "서평 쓰기"}
+                  </button>
+                )}
               </div>
               {book.comment ? (
                 /* 서평은 **마크다운으로 그린다** — 제목은 제목답게, 굵은 글씨는 굵게.
@@ -215,14 +224,17 @@ export default function BookDetailModal({ bookId, onClose, onUpdated, onDeleted 
               )}
             </section>
 
-            <div className="modal-actions">
-              <button className="btn" onClick={() => setEditing(true)}>
-                내용 업데이트
-              </button>
-              <button className="btn danger" onClick={() => setConfirmingDelete(true)}>
-                책 제거
-              </button>
-            </div>
+            {/* '보기만' 멤버(개인 서재 서버)에게는 고치고 지우는 단추를 보이지 않는다 — 서버도 403으로 막는다 */}
+            {editable && (
+              <div className="modal-actions">
+                <button className="btn" onClick={() => setEditing(true)}>
+                  내용 업데이트
+                </button>
+                <button className="btn danger" onClick={() => setConfirmingDelete(true)}>
+                  책 제거
+                </button>
+              </div>
+            )}
           </div>
         )}
 

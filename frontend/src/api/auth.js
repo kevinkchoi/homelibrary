@@ -24,3 +24,7 @@ export async function fetchMe() {
   const { data } = await client.get("/auth/me");
   return data;
 }
+
+export async function markWelcomeSeen() {
+  await client.put("/me/welcome-seen");
+}

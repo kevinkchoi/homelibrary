@@ -4,10 +4,11 @@ from sqlalchemy.orm import Session
 from app.auth.deps import require_admin
 from app.auth.security import hash_password
 from app.config import settings
-from app.services.image_service import delete_image
 from app.database import get_db
 from app.models.book import Book
+from app.models.library import Library
 from app.models.user import User
+from app.services import library_service
 from app.routers.auth import ensure_account_available
 from app.schemas.user import UserAdminUpdate, UserOut, UserPasswordReset, UserRegister
 
@@ -16,7 +17,12 @@ router = APIRouter(prefix="/api/users", tags=["users"])
 
 @router.get("", response_model=list[UserOut])
 def list_users(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    return db.query(User).order_by(User.created_at.asc()).all()
+    users = db.query(User).order_by(User.created_at.asc()).all()
+    if settings.personal_mode:
+        # 개인 서재 서버의 운영자는 사용자의 **개인정보를 볼 수 없다**(사용자 요구, 2026-11-27) — 이메일을 비운다.
+        # 운영에 필요한 것(아이디·도서관·역할·가입일)만. 도서관별 현황은 /api/admin/libraries.
+        return [UserOut.model_validate(u).model_copy(update={"email": None}) for u in users]
+    return users
 
 
 @router.post("", response_model=UserOut, status_code=201)
@@ -24,7 +30,15 @@ def create_user(payload: UserRegister, db: Session = Depends(get_db), admin: Use
     """관리자가 가족 계정을 만든다. 공개 가입은 닫혀 있다(auth.register 참고).
 
     가입과 달리 **토큰을 돌려주지 않는다** — 돌려주면 화면이 새 계정으로 로그인이 바뀐다.
+
+    개인 서재(personal) 서버에서는 쓰지 않는다: 새 사람은 사이트 초대 코드로 가입해 자기 도서관을 만들고,
+    도서관 멤버는 그 도서관의 주인이 [우리 도서관]에서 만든다(POST /api/library/members).
     """
+    if settings.personal_mode:
+        raise HTTPException(
+            status_code=400,
+            detail="개인 서재 서버에서는 초대 코드로 가입하거나, 도서관 주인이 [우리 도서관]에서 멤버를 만듭니다.",
+        )
     ensure_account_available(db, payload)
     user = User(
         username=payload.username,
@@ -57,14 +71,17 @@ def delete_user(user_id: int, db: Session = Depends(get_db), admin: User = Depen
         _ensure_not_last_admin(db, excluding_user_id=user_id)
 
     if settings.personal_mode:
-        # 개인 서재(homelibrary.kr): 그 사람의 책은 **그 사람만** 볼 수 있으므로 남겨 두면 누구도 못 보는
-        # 유령 데이터가 된다. 계정과 함께 책·표지 파일까지 지운다(추천·'다른 책' 표시는 FK CASCADE).
-        for book in db.query(Book).filter(Book.owner_id == user_id).all():
-            delete_image(book.cover_image_path)
-            db.delete(book)
-    else:
-        # 계정은 삭제하되, 그 사람이 등록한 책은 가족 공용 목록에 그대로 남김
-        db.query(Book).filter(Book.owner_id == user_id).update({Book.owner_id: None})
+        # 개인 서재: 도서관 **주인**을 지우면 그 도서관 전체(멤버·책·표지)를 지운다 — 주인 없는 도서관을 남기지 않는다.
+        # 멤버만 지우면 그 사람 계정만 지우고 책은 도서관에 남는다(library_service).
+        lib = db.get(Library, target.library_id) if target.library_id else None
+        if lib is not None and lib.owner_user_id == target.id:
+            library_service.delete_library(db, lib)
+        else:
+            library_service.remove_member(db, target)
+        db.commit()
+        return
+    # 계정은 삭제하되, 그 사람이 등록한 책은 가족 공용 목록에 그대로 남김
+    db.query(Book).filter(Book.owner_id == user_id).update({Book.owner_id: None})
     db.delete(target)
     db.commit()
 
@@ -103,6 +120,13 @@ def reset_password(
     만드는 방법은 그 사람이 등록한 책의 주인 표시를 잃는다.
     이미 발급된 토큰은 무효화하지 않는다(JWT에 비밀번호 버전이 없다) — 만료 시까지 유효.
     """
+    if settings.personal_mode:
+        # 운영자가 남의 비밀번호를 바꿀 수 있으면 그 계정으로 들어가 책 목록을 볼 수 있다 — "운영자가 사용자 데이터를
+        # 빼갈 수 없게"(사용자 요구, 2026-11-27)와 어긋난다. 멤버의 비밀번호는 **그 도서관의 주인**이 재설정한다.
+        raise HTTPException(
+            status_code=403,
+            detail="개인 서재 서버에서는 운영자가 비밀번호를 바꿀 수 없습니다. 도서관 주인이 [우리 도서관]에서 재설정합니다.",
+        )
     target = db.query(User).filter(User.id == user_id).first()
     if not target:
         raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")

@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import * as authApi from "../api/auth";
 import { resetAiStatus } from "../utils/serverConfig.js";
 
@@ -30,6 +30,33 @@ export function AuthProvider({ children }) {
     return data.user;
   }
 
+  // 저장해 둔 사용자 정보는 로그인한 그 순간의 것이다. 역할(도서관 주인이 바꿀 수 있다)·환영 안내 여부가
+  // 바뀌었을 수 있으므로 앱이 뜰 때 한 번 서버에 다시 묻는다.
+  useEffect(() => {
+    if (!localStorage.getItem("hl_token")) return;
+    authApi
+      .fetchMe()
+      .then((fresh) => {
+        localStorage.setItem("hl_user", JSON.stringify(fresh));
+        setUser(fresh);
+      })
+      .catch(() => {}); // 401이면 client.js가 로그아웃시킨다
+  }, []);
+
+  /** 환영 안내를 닫았을 때 — 서버에도 적고(다른 기기), 화면 상태도 바로 바꾼다. */
+  async function markWelcomeSeen() {
+    try {
+      await authApi.markWelcomeSeen();
+    } catch {
+      // 실패해도 이번에는 닫는다. 다음 로그인 때 다시 뜰 뿐이다.
+    }
+    setUser((u) => {
+      const next = u ? { ...u, welcome_seen_at: new Date().toISOString() } : u;
+      if (next) localStorage.setItem("hl_user", JSON.stringify(next));
+      return next;
+    });
+  }
+
   function logout() {
     resetAiStatus();
     localStorage.removeItem("hl_token");
@@ -38,7 +65,7 @@ export function AuthProvider({ children }) {
   }
 
   const value = useMemo(
-    () => ({ user, isAuthenticated: !!user, login, register, logout }),
+    () => ({ user, isAuthenticated: !!user, login, register, logout, markWelcomeSeen }),
     [user]
   );
 

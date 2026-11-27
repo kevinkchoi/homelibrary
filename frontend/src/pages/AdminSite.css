@@ -1,0 +1,94 @@
+.admin-site-page h1 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.admin-site-desc,
+.admin-site-total {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  margin: 0 0 10px;
+}
+
+.admin-site-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.admin-site-ok {
+  color: var(--color-primary);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.admin-site-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-site-lib {
+  margin-bottom: 10px;
+}
+
+.admin-site-lib-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-site-lib-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.admin-site-lib-meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.admin-site-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.admin-site-member {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  background: var(--color-bg);
+  border-radius: 999px;
+  padding: 2px 4px 2px 10px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.admin-site-x {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.admin-site-x:hover {
+  background: var(--color-border);
+}
+
+.admin-site-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-site-actions .btn {
+  white-space: nowrap;
+}

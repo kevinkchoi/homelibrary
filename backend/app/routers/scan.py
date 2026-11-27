@@ -2,6 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
+from app import library_scope
 from app.auth.deps import get_current_user
 from app.models.user import User
 from app.schemas.scan import ScanResult
@@ -24,6 +25,7 @@ def extract_from_photo(
     photo: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
 ):
+    library_scope.ensure_can_edit(current_user)  # 사진 스캔은 책을 넣으려고 하는 일이다
     api_key = user_keys.ai_key_for(current_user)
     if not api_key:
         # personal 모드에서 [내 설정]에 Claude 키를 넣지 않은 사용자. 화면도 이 기능을 숨기지만

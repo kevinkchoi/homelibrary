@@ -27,6 +27,11 @@ class Recommendation(Base):
     owner_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
     )
+    # 0010부터는 사람이 아니라 **도서관** 단위로 가른다(멤버끼리 '다른 책' 표시·추천을 함께 본다).
+    # owner_id는 0009의 흔적으로 남는다(쓰지 않음).
+    library_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("libraries.id", ondelete="CASCADE"), nullable=True, index=True
+    )
 
     # 이 배치를 만든 시각. 같은 배치의 행은 모두 같은 값을 갖는다(하루 지나면 다시 만든다).
     generated_at: Mapped[datetime] = mapped_column(

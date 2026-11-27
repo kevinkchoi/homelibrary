@@ -21,13 +21,18 @@ class DuplicateAcknowledgement(Base):
     # personal 모드에서는 사람마다 따로 기억해야 하므로 owner까지 묶어 유일하다(0009).
     # family 모드는 owner가 NULL이고, 중복 저장은 _save_acknowledgements가 미리 걸러 준다.
     __table_args__ = (
-        UniqueConstraint("owner_id", "reason", "key", name="uq_duplicate_ack_owner_reason_key"),
+        UniqueConstraint("library_id", "reason", "key", name="uq_duplicate_ack_library_reason_key"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     # personal 모드(homelibrary.kr)의 주인. family 모드는 NULL(가족 공용).
     owner_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    # 0010부터는 사람이 아니라 **도서관** 단위로 가른다(멤버끼리 '다른 책' 표시·추천을 함께 본다).
+    # owner_id는 0009의 흔적으로 남는다(쓰지 않음).
+    library_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("libraries.id", ondelete="CASCADE"), nullable=True, index=True
     )
 
     # "isbn" = 같은 ISBN 묶음 / "title" = 같은 제목 묶음 (books.py의 DuplicateGroup.reason과 동일)

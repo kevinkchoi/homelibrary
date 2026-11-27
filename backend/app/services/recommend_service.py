@@ -335,9 +335,9 @@ def _select_with_claude(profile: dict, candidates: list[dict], api_key: str) -> 
 # ──────────────────────────────────────────────────────────────────────────
 
 def _mine(db: Session, user: User, *entities):
-    """추천 테이블도 personal 모드에서는 사람마다 따로다."""
+    """추천 테이블도 personal 모드에서는 도서관마다 따로다(멤버끼리 같은 목록을 본다)."""
     return library_scope.scope(
-        db.query(*(entities or (Recommendation,))), user, Recommendation.owner_id
+        db.query(*(entities or (Recommendation,))), user, Recommendation.library_id
     )
 
 
@@ -356,11 +356,12 @@ def refresh(db: Session, user: User) -> list[Recommendation]:
 
     now = datetime.now(timezone.utc)
     _mine(db, user).delete(synchronize_session=False)
-    owner = library_scope.owner_id_for(user)
+    lib = library_scope.library_id_for(user)
     rows = []
     for i, c in enumerate(chosen):
         rows.append(Recommendation(
-            owner_id=owner,
+            owner_id=user.id,
+            library_id=lib,
             generated_at=now,
             title=c["title"][:500],
             author=(c.get("author") or None),

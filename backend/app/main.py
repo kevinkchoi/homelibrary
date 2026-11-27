@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.database import SessionLocal
-from app.routers import auth, books, import_export, me, recommend, scan, users
+from app.routers import admin, auth, books, feedback, import_export, library, me, recommend, scan, users
 from app.services import maintenance_service
 
 # 앱 로그를 실제로 보이게 한다. 이게 없으면 루트 로거 기본 레벨(WARNING) 때문에 `logger.info(...)`가
@@ -56,6 +56,9 @@ app.include_router(scan.router)
 app.include_router(users.router)
 app.include_router(recommend.router)
 app.include_router(me.router)
+app.include_router(library.router)
+app.include_router(feedback.router)
+app.include_router(admin.router)
 
 app.mount("/api/images", StaticFiles(directory=settings.images_dir, check_dir=False), name="images")
 
