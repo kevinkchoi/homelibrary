@@ -1,0 +1,130 @@
+:root {
+  --color-primary: #2c5f8a;
+  --color-primary-dark: #1e4260;
+  --color-bg: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-border: #dde3ea;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-danger: #d64545;
+  /* 중복 등록 경고용 — 위험(danger)과 구분해야 한다. 저장을 막는 오류가 아니라
+     "확인하고 진행하세요"라는 주의이기 때문. */
+  --color-warning: #d99a2b;
+  --color-warning-bg: #fdf6e6;
+  --color-warning-text: #8a5b00;
+
+  /* 상단 바 높이. 표 머리글(sticky)이 이 아래에 붙어야 해서 두 곳이 같은 값을 써야 한다.
+     JS로 재지 않고 **상수로 둔다** — 상단 바는 한 줄 고정이라 내용이 늘어나지 않고,
+     재는 방식은 값이 어긋났을 때 헤더가 본문을 덮는 사고로 이어졌다(global.css body 주석). */
+  --hdr-h: 57px;
+
+  /* 화면 가장자리에서 시스템이 차지하는 부분(상태바·홈바·노치).
+     **안드로이드 앱에서 이 값이 0이 아닐 수 있다.** Capacitor 8은 WebView가 새 버전(>=140)이면
+     `viewport-fit=cover`를 보고 화면 끝까지 그리게(edge-to-edge) 만들고 여기에 진짜 값을 넣는다.
+     옛 WebView(<140)에서는 Capacitor가 대신 여백을 넣어 주고 이 값은 0이 된다.
+     → **양쪽 다 이 변수만 쓰면 맞는다.** 0이면 아무것도 더하지 않는다.
+     (2026-09-27: 이 값을 안 쓰는 바람에 삼성 Android 16 폰에서 상단 메뉴가
+      상태바와 겹쳤다. 에뮬레이터는 WebView 133이라 재현되지 않았다.) */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* 상단 바가 실제로 차지하는 높이. 표 머리글이 이 값 아래에 붙는다.
+     **`--hdr-h`가 아니라 항상 이 값을 쓸 것** — 안 그러면 안전영역만큼 어긋난다. */
+  --hdr-total: calc(var(--hdr-h) + var(--safe-top));
+
+  /* 사이드바(어두운 패널) */
+  --side-bg: #1f2937;
+  --side-text: #e5e7eb;
+  --side-muted: #9ca3af;
+  --side-active: #60a5fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", Roboto, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  /* ⚠️ 여기에 `padding-top: var(--nav-h)` 같은 보정을 **다시 넣지 말 것.**
+     네비바를 `fixed`로 두고 JS로 잰 높이만큼 본문을 밀어내던 구조였는데, 그 값이 한 번만
+     어긋나면 헤더가 본문을 덮는다(2026-09-27에 실제로 그렇게 깨졌다).
+     지금은 `position: sticky`라 네비바가 **문서 흐름 안에** 있어 보정 자체가 필요 없다. */
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* 책 목록처럼 표가 나오는 화면은 화면 폭을 다 쓴다. 글을 읽는 화면(폼·안내)은 1100px를
+   유지한다 — 한 줄이 너무 길면 오히려 읽기 힘들기 때문이다. */
+.container.container-wide {
+  max-width: none;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn:hover {
+  background: var(--color-primary-dark);
+}
+
+.btn.secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn.danger {
+  background: var(--color-danger);
+}
+
+/* 줄 안에 끼워 넣는 작은 단추(예: 서평 머리줄의 [전체 보기]).
+   본문 흐름을 끊지 않을 만큼만 작게. */
+.btn.btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: white;
+  color: var(--color-text);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+}

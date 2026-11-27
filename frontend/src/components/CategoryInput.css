@@ -1,0 +1,123 @@
+.category-input {
+  position: relative;
+}
+
+.category-input-row {
+  display: flex;
+  gap: 4px;
+}
+
+.category-input-row input {
+  flex: 1;
+  min-width: 0; /* 없으면 좁은 폰 화면에서 입력칸이 부모를 밀어 가로 스크롤이 생긴다 */
+}
+
+.category-toggle {
+  flex: none;
+  width: 36px;
+  border: 1px solid var(--border, #d0d5dd);
+  border-radius: 6px;
+  background: #f7f8fa;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #475467;
+}
+
+.category-toggle:hover {
+  background: #eef0f4;
+}
+
+/* 목록은 폼 위에 떠야 한다. 아래 칸(ISBN 등)을 밀어내면 고르는 동안 폼이 출렁인다. */
+.category-options {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  max-height: 240px; /* 234종이라 제한이 없으면 화면을 통째로 덮는다 */
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid var(--border, #d0d5dd);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(16, 24, 40, 0.12);
+}
+
+.category-options button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.category-options button:hover {
+  background: #eef2ff;
+}
+
+/* 지금 들어 있는 카테고리를 눈에 보이게 — 콤마 문자열만 보면 몇 개인지 세게 된다 */
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.category-chips li {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px 2px 8px;
+  border-radius: 999px;
+  background: #eef0f4;
+  font-size: 0.78rem;
+  color: #344054;
+}
+
+/* 첫 번째가 정렬 기준이라 구분해 준다 */
+.category-chips li.first {
+  background: #e0e7ff;
+  font-weight: 600;
+}
+
+.category-chips button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: #667085;
+}
+
+.category-chips button:hover {
+  color: #b42318;
+}
+
+.category-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-count {
+  flex: none;
+  font-size: 0.78rem;
+  color: #667085;
+}
+
+.category-new {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: #667085;
+}

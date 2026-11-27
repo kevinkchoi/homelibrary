@@ -1,0 +1,75 @@
+.settings-page h1 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.settings-who {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+
+.settings-section {
+  margin-bottom: 16px;
+}
+
+.settings-section h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+.settings-desc,
+.settings-help {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0 0 10px;
+}
+
+.settings-help {
+  margin: 10px 0 0;
+}
+
+.settings-state {
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+
+.settings-mask {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--color-text-muted);
+}
+
+/* 입력칸 + 단추가 한 줄 — 좁으면 줄을 바꿔 단추가 화면 밖으로 나가지 않게 */
+.settings-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-form input {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.settings-form .btn {
+  white-space: nowrap;
+}
+
+/* 비밀번호는 칸이 셋이라 세로로 쌓는다 */
+.settings-form-stack {
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 420px;
+}
+
+.settings-form-stack input {
+  flex: none;
+}
+
+.settings-ok {
+  font-size: 13px;
+  color: var(--color-primary);
+  margin: 8px 0 0;
+}

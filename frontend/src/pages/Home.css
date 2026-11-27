@@ -1,0 +1,112 @@
+/* ⚠️ `.home-header`는 **홈 화면 말고도 5곳**이 쓴다
+   (새책 추가 · 책 찾기 · 책 관리 · 카테고리 정리 · 서재 점검의 제목 줄).
+   홈에서만 안 쓰게 됐다고 규칙을 지우면 그 화면들이 같이 깨진다 — 실제로 지웠다가 되살렸다.
+
+   홈 화면에서는 2026-09-27에 제목 줄(`내 서재` / `총 N권`)을 뺐다. 앱 이름은 상단 바에,
+   총 권수는 사이드바에 있어 중복이었고, 폰에서 첫 화면 위쪽을 목록에 돌려주려는 것이었다. */
+.home-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.home-header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.home-total {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* 페이지네이션 + 보기 방식 토글을 한 줄에 배치 */
+.view-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 10px 0 14px;
+  flex-wrap: wrap;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.view-toggle-btn {
+  padding: 5px 12px;
+  font-size: 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.view-toggle-btn.active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* 책 관리 화면의 '책꽂이 위치 일괄 지정' — 책을 골랐을 때만 나타난다 */
+.bulk-shelf {
+  margin-bottom: 14px;
+  padding: 14px;
+}
+
+.bulk-shelf label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.bulk-shelf-row {
+  display: flex;
+  gap: 8px;
+}
+
+.bulk-shelf-row input {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+}
+
+.bulk-shelf-row .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bulk-shelf-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.bulk-shelf-message {
+  background: #eef4fa;
+  border: 1px solid #cfe0ef;
+  color: var(--color-primary);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin: 0 0 14px;
+}
+
+/* 검색어 그대로는 못 찾아 단어를 나눠 찾았을 때의 안내.
+   경고(빨강)가 아니라 설명이므로 주의(노랑) 색을 쓴다 — 잘못된 게 아니라 알려주는 것이다. */
+.search-relaxed {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-warning);
+  border-radius: 6px;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  font-size: 13px;
+}

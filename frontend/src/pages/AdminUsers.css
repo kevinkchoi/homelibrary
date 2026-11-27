@@ -1,0 +1,114 @@
+.admin-users-page h1 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.admin-users-desc {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin: 0 0 16px;
+}
+
+.admin-users-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.me-badge {
+  display: inline-block;
+  background: var(--color-primary);
+  color: white;
+  font-size: 11px;
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-left: 6px;
+}
+
+/* 사용자 추가 — 폰에서는 입력칸이 한 줄에 하나씩, 넓은 화면에서는 한 줄로 */
+.admin-users-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.admin-users-add h2 {
+  flex: 1 1 100%;
+  font-size: 15px;
+  margin: 0;
+}
+
+.admin-users-add input {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.admin-users-created {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-primary);
+}
+
+/* .book-table은 table-layout: fixed라 열이 **똑같이** 나뉜다(책 목록의 긴 저자 때문, BookTable.css).
+   사용자 표는 그 문제가 없고 오히려 단추 3개짜리 열이 1/5로 눌려 글자가 한 자씩 세로로 쪼개졌다.
+   그래서 이 표만 auto로 되돌리고 단추는 줄바꿈하지 않게 한다. */
+.admin-users-page .admin-users-table {
+  table-layout: auto;
+}
+
+.admin-users-actions .btn {
+  white-space: nowrap;
+}
+
+/* 폰: 사용자 목록을 한 사람씩 카드로.
+   표가 .book-table을 빌려 쓰는데, 2026-09-27 카드 재설계에서 BookTable.css가 760px 이하에서
+   .book-table을 숨기게 되어 **폰에서는 사용자 목록이 통째로 안 보였다**(2026-10-11 발견).
+   표를 화면보다 넓게 만들지 않으려고 칸을 세로로 쌓는다. */
+@media (max-width: 760px) {
+  .admin-users-page .admin-users-table,
+  .admin-users-table tbody,
+  .admin-users-table tr,
+  .admin-users-table td {
+    display: block;
+  }
+
+  .admin-users-table thead {
+    display: none;
+  }
+
+  /* .book-table의 바깥 테두리·배경이 카드들을 한 번 더 감싸 보이지 않게 */
+  .admin-users-page .admin-users-table {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .admin-users-table tr {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+
+  .admin-users-table td {
+    border: none;
+    padding: 2px 0;
+  }
+
+  .admin-users-email,
+  .admin-users-date {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-users-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+}

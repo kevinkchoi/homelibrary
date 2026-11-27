@@ -1,0 +1,115 @@
+.image-editor-overlay {
+  position: fixed;
+  /* inset:0 이 아닌 이유는 BookDetailModal.css 설명 참고 —
+     문서가 가로로 넘치는 화면에서 inset:0 은 화면이 아니라 문서 폭으로 잡힌다. */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  /* 위아래 끝에 단추가 붙는 화면이라 안전영역만큼 안쪽으로 민다. */
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  box-sizing: border-box;
+  z-index: 110;
+}
+
+.image-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.image-editor-hint {
+  color: #cbd5e1;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+.image-editor-adjust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px 8px;
+}
+
+.image-editor-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.image-editor-slider input[type="range"] {
+  width: 140px;
+}
+
+.image-editor-slider-val {
+  min-width: 34px;
+  text-align: right;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+
+.image-editor-reset {
+  background: none;
+  border: none;
+  color: #38bdf8;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.image-editor-stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 8px;
+}
+
+.image-editor-canvas {
+  touch-action: none;
+  border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  cursor: crosshair;
+}
+
+.image-editor-processing {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 16px;
+}
+
+.image-editor-error {
+  color: #fca5a5;
+  font-size: 15px;
+  text-align: center;
+  padding: 24px;
+}
+
+.image-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+@supports (height: 100dvh) {
+  .image-editor-overlay {
+    height: 100dvh;
+  }
+}

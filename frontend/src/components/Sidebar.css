@@ -1,0 +1,143 @@
+/* 바깥을 눌러 닫기 위한 **투명한** 막. 어둡게 덮지 않는 이유: 화면 전체가 어두워지면
+   뒤에 있던 목록이 안 보여 "어디로 가는 중이었는지"를 잃는다. 어두운 것은 패널뿐이다. */
+.sidebar-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: transparent;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 41;
+  width: 252px;
+  /* 바깥을 눌러 닫을 수 있도록 오른쪽에 최소한의 여백을 남긴다 */
+  max-width: 84%;
+  height: 100%;
+  background: var(--side-bg);
+  color: var(--side-text);
+  display: flex;
+  flex-direction: column;
+  /* 배경을 덮지 않으므로 그림자로 본문과 경계를 만든다 */
+  box-shadow: 6px 0 28px rgba(0, 0, 0, 0.28);
+  overflow-y: auto;
+}
+
+/* 폰 주소창 때문에 100%가 실제 보이는 높이보다 클 수 있다. dvh를 아는 브라우저만 바꿔 쓴다. */
+@supports (height: 100dvh) {
+  .sidebar {
+    height: 100dvh;
+  }
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 6px 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sidebar-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.sidebar-close {
+  border: none;
+  background: none;
+  color: var(--side-muted);
+  font-size: 17px;
+  line-height: 1;
+  /* 손가락으로 누르는 단추는 40px 이상 */
+  width: 40px;
+  height: 40px;
+}
+
+/* 총 권수 — 예전에는 홈 화면 제목 옆에 있었다. 여기로 옮겨 어느 화면에서든 볼 수 있다. */
+.sidebar-stat {
+  padding: 14px 16px;
+  /* 사이드바 머리줄도 상태바에 가리지 않게 (edge-to-edge 기기에서만 0이 아니다) */
+  padding-top: calc(14px + var(--safe-top));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sidebar-stat-n {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.sidebar-stat-l {
+  font-size: 12px;
+  color: var(--side-muted);
+  margin-top: 2px;
+}
+
+.sidebar-links {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  flex: 1;
+}
+
+.sidebar-links a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 16px;
+  color: var(--side-text);
+  text-decoration: none;
+  font-size: 14.5px;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-links a.active {
+  background: rgba(96, 165, 250, 0.16);
+  color: #fff;
+  border-left-color: var(--side-active);
+  font-weight: 600;
+}
+
+.sidebar-icon {
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-user {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 14px 16px;
+  /* 아이폰 홈바에 가리지 않도록 */
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sidebar-username {
+  font-size: 13px;
+  color: var(--side-muted);
+  /* 아이디가 길어도 [로그아웃]을 밀어내지 않게 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 어두운 패널 위에서는 일반 .btn(흰 배경)이 튀어서 따로 둔다 */
+.sidebar-logout {
+  flex: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--side-text);
+  border-radius: 7px;
+  padding: 7px 11px;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.sidebar-logout:hover {
+  background: rgba(255, 255, 255, 0.18);
+}

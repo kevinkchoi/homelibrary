@@ -1,0 +1,153 @@
+.book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-error {
+  color: var(--color-danger);
+  font-size: 13px;
+  margin: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.form-grid label,
+.comment-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.comment-field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.comment-field-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment-count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  opacity: 0.75;
+}
+
+/* 서평은 A4 1~2쪽까지 들어온다. 세 줄짜리 칸에서는 긴 글을 쓸 엄두가 안 난다.
+   세로로만 늘릴 수 있게 둔다 — 가로로 늘리면 폼 폭을 넘겨 레이아웃이 어긋난다. */
+.comment-input {
+  min-height: 260px;
+  resize: vertical;
+  line-height: 1.6;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+@media (max-width: 760px) {
+  /* 폰에서는 키보드가 화면 절반을 먹는다. 칸이 너무 크면 쓰는 줄이 안 보인다. */
+  .comment-input {
+    min-height: 180px;
+  }
+}
+
+.isbn-row {
+  display: flex;
+  gap: 6px;
+}
+
+.isbn-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.isbn-row .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.isbn-message {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 바코드 우선 안내 블록 — 새책 추가에서 폼 맨 위에 나온다 */
+.isbn-quick {
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 8px;
+  background: var(--color-bg);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.isbn-quick-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.isbn-quick-desc {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* 블록 안에서는 라벨 글자를 숨기지 않되 여백만 정리 */
+.isbn-quick .isbn-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* 책을 한 손에 든 채로 누르는 주 동작이라 터치 영역을 넉넉히 준다(iOS 권장 44px).
+   전역 .btn을 키우면 다른 화면이 다 바뀌므로 이 블록 안에서만 적용한다. */
+.isbn-quick .isbn-row .btn {
+  min-height: 44px;
+}
+
+.isbn-quick .isbn-row input {
+  min-height: 44px;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 폰에서는 입력칸 + 버튼 2개가 한 줄에 들어가지 않는다(실제로 [가져오기]가 화면 밖으로
+     밀려났다). 입력칸은 한 줄을 다 쓰고, 버튼은 아랫줄에서 폭을 나눠 갖게 한다. */
+  .isbn-row {
+    flex-wrap: wrap;
+  }
+
+  .isbn-row input {
+    flex: 1 1 100%;
+  }
+
+  .isbn-row .btn {
+    flex: 1 1 0;
+  }
+}

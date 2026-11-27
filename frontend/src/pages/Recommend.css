@@ -1,0 +1,149 @@
+/* 공용 `.home-header`는 한 줄(flex, nowrap)이라 폰에서 제목이 눌린다 —
+   375px에서 "새책 추" / "천" 으로 쪼개졌다(실측 폭 68px). 공용 클래스는 5개 화면이
+   함께 쓰므로 건드리지 않고, 이 화면에서만 덧씌운다. */
+.rec-header {
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.rec-header h1 {
+  white-space: nowrap;
+}
+
+/* [새책 추천] — 카드 한 장에 표지·제목·이유가 같이 보이게.
+   폰에서 먼저 보이는 화면이라 세로 목록을 기본으로 두고, 넓은 화면에서만 2열로 편다. */
+
+.rec-head-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rec-when {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.rec-intro {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.rec-warn {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff7e6;
+  border: 1px solid #f0d9a6;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.rec-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.rec-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+
+.rec-cover {
+  width: 72px;
+  min-width: 72px;
+  height: 104px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #eef1f5;
+}
+
+.rec-cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.rec-body {
+  min-width: 0;          /* 이게 없으면 긴 제목이 카드를 밀어 가로 넘침이 생긴다 */
+  flex: 1;
+}
+
+.rec-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rec-title {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--color-primary);
+  overflow-wrap: anywhere;
+}
+
+.rec-badge {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.rec-meta {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.rec-reason {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.rec-tags {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.rec-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.rec-link {
+  font-size: 12px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+@media (min-width: 1000px) {
+  .rec-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}

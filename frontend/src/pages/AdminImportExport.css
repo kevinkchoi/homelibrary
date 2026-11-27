@@ -1,0 +1,46 @@
+.import-export-page h1 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.ie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.ie-grid h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.ie-grid p {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.ie-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ie-message {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.ie-message.success {
+  background: #e8f7ec;
+  color: #1e7a34;
+  border: 1px solid #bfe8c9;
+}
+
+.ie-message.error {
+  background: #fdecec;
+  color: #b3261e;
+  border: 1px solid #f5c2c0;
+}

@@ -1,0 +1,345 @@
+.book-table {
+  width: 100%;
+  /* collapse가 아니라 separate인 이유: collapse에서는 테두리가 **셀이 아니라 표**에 그려져
+     sticky로 떠 있는 머리글의 밑줄이 사라진다. 대신 아래 last-child 규칙으로 모양을 맞춘다. */
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  /* overflow: hidden 을 쓰면 안 된다 — 스크롤을 자르는 조상이 되어 sticky 머리글이 죽는다.
+     (모서리를 깎으려고 넣었던 것인데, 아래에서 셀마다 radius를 줘서 대신한다) */
+}
+
+.book-table th,
+.book-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+}
+
+/* 표 아래 테두리와 겹쳐 두 줄로 보이는 것을 막는다 */
+.book-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* 머리글을 화면 위에 붙여 둔다. 845권을 훑는 동안 어느 열이 무엇인지 계속 보여야 한다.
+   top이 0이 아닌 이유: 위에 sticky 상단 바가 있어 그 높이만큼 내려야 가려지지 않는다.
+   --hdr-h 는 global.css의 **상수**다 — 예전에는 NavBar가 JS로 자기 높이를 재서 넣었는데,
+   그 값이 어긋나면 헤더가 본문을 덮는 사고가 났다. 지금 상단 바는 한 줄 고정이라 상수로 족하다. */
+.book-table thead th {
+  position: sticky;
+  /* 1px 빼는 이유: 상단 바와 이 머리글은 **서로 다른 두 겹의 sticky**라, 배율이 100%가
+     아닐 때(브라우저 확대/축소, 고해상도) 두 값의 반올림이 1px 어긋날 수 있다.
+     어긋나서 **틈**이 생기면 그 사이로 책 행이 지나가 보여 화면이 엉켜 보인다.
+     1px 밀어 넣으면 최악의 경우 머리글 윗줄 1px이 상단 바에 가려질 뿐 틈은 생기지 않는다.
+     (틈 ↔ 겹침 중에서는 겹침이 눈에 덜 띈다) */
+  top: calc(var(--hdr-total, 57px) - 1px);
+  z-index: 2; /* 본문 행 위 · 상단 바(30) 아래 */
+}
+
+.book-table th {
+  background: #eef2f6;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.book-table thead th:first-child {
+  border-top-left-radius: 7px;
+}
+
+.book-table thead th:last-child {
+  border-top-right-radius: 7px;
+}
+
+.book-table tbody tr:hover {
+  background: #f9fbfd;
+}
+
+.title-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.title-link:hover .title-text {
+  text-decoration: underline;
+}
+
+.title-thumb {
+  width: 26px;
+  height: 36px;
+  object-fit: contain;
+  background: #f5f7fa;
+  border-radius: 3px;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.title-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2f6;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.select-col {
+  width: 32px;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 24px;
+}
+
+/* 등록일 열 — 폰에서는 숨긴다. 좁은 화면에 6열은 빽빽해서 제목이 더 중요하다.
+   (등록일은 책을 눌러 상세에서 볼 수 있다) */
+.book-table .col-added {
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* --- 열 폭 ---
+   표 전체를 브라우저 폭에 맞춰 늘리므로 비율로 준다. 제목이 가장 넓고, 저자는 그보다 좁게.
+   저자는 이름 몇 자면 충분한데 제목만큼 자리를 차지하면 정작 제목이 줄바꿈된다.
+
+   ⚠️ `table-layout: fixed`가 **반드시** 필요하다. 기본값 auto에서는 아래 width가 **제안**일
+   뿐이고, 내용이 길면 브라우저가 그 열을 늘린다. 저자 열은 `white-space: nowrap`이라
+   최소 폭이 **문자열 전체 길이**가 되는데, 실제로 저자가 14명(73자)인 책이 있다.
+   그 책이 있는 페이지에서는 저자 열이 **678px, 제목 열이 75px**까지 갔다(실측).
+   fixed면 적어 준 폭이 그대로 지켜지고, 넘치는 글자는 아래 ellipsis 규칙이 … 로 자른다.
+   폭이 넓든 좁든 같은 문제라 미디어쿼리 안이 아니라 **여기**에 둔다. */
+.book-table {
+  table-layout: fixed;
+}
+
+.book-table .col-title {
+  width: 34%;
+}
+
+.book-table .col-author {
+  width: 15%;
+}
+
+.book-table .col-publisher {
+  width: 15%;
+}
+
+/* 카테고리는 한두 단어가 대부분이라 넓게 둘 이유가 없다. 줄인 만큼 제목에 넘겨준다.
+   (여러 개가 붙어 길어지면 … 로 잘리고, 책을 누르면 상세에서 전부 보인다) */
+.book-table .col-category {
+  width: 13%;
+}
+
+.book-table .col-shelf {
+  width: 13%;
+}
+
+.book-table .col-added {
+  width: 10%;
+}
+
+/* fixed 레이아웃에서는 열이 내용에 맞춰 늘어나지 않으므로, 띄어쓰기 없는 긴 제목이
+   칸을 삐져나가지 않도록 아무 데서나 줄바꿈되게 한다. */
+.book-table .title-text {
+  overflow-wrap: anywhere;
+}
+
+/* 한 줄을 넘기면 잘라서 … 로 줄인다(행 높이가 들쭉날쭉해지는 것도 막는다) */
+.book-table .col-author,
+.book-table .col-publisher,
+.book-table .col-category,
+.book-table .col-shelf {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 저자 두 가지 표기 — 기본(넓은 화면)은 전체를 보여준다 */
+.book-table .author-short {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   좁은 화면(≤760px)에서는 **표를 버리고 카드 목록**을 쓴다.
+
+   예전에는 표를 `min-width: 640px`로 화면보다 넓게 두고 가로로 밀어 보게 했다.
+   그 가로 넘침이 레이아웃 뷰포트를 375 → 656px로 부풀려 `position: fixed`·`vw`·
+   미디어쿼리를 줄줄이 망가뜨렸고, 상단 메뉴가 화면 밖으로 나가는 문제를 세 번 고쳤다.
+   **카드로 바꾸면 문서가 가로로 넘치지 않아 그 문제 전체가 없어진다.**
+   ───────────────────────────────────────────────────────────── */
+
+/* 카드 화면의 정렬 막대. 표 화면에서는 머리글을 눌러 정렬하므로 숨긴다. */
+.cards-sort {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cards-sort-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.cards-sort select {
+  height: 32px;
+  padding: 0 6px;
+  font-size: 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.cards-sort-dir {
+  height: 32px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* 기본(넓은 화면)은 표를 쓰고 카드는 숨긴다 */
+.book-cards {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.book-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.book-card + .book-card {
+  margin-top: 8px;
+}
+
+.book-card-check {
+  flex: none;
+  margin-top: 4px;
+  width: 18px;
+  height: 18px;
+}
+
+.book-card-cover {
+  flex: none;
+  width: 44px;
+  height: 62px;
+  object-fit: contain;
+  background: #f5f7fa;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.book-card-cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2f6;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.book-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.book-card-title {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.35;
+  /* 띄어쓰기 없는 긴 제목이 카드를 넘치지 않게. 표에서와 달리 **자르지 않는다** —
+     카드에는 자리가 있고, 폰에서 제목이 잘리면 무슨 책인지 모르는 경우가 많다. */
+  overflow-wrap: anywhere;
+}
+
+.book-card-meta {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  /* 저자가 14명인 책도 있다. 표에서는 …로 잘렸지만 여기서는 줄바꿈해 전부 보여준다. */
+  overflow-wrap: anywhere;
+}
+
+.book-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.book-tag {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+
+.book-tag.shelf {
+  color: var(--color-primary);
+  background: #eef4fa;
+  border-color: #cfe0ef;
+}
+
+.book-cards-empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+@media (max-width: 760px) {
+  /* 여기서 자리를 바꾼다 — 표는 숨고 카드가 나온다 */
+  .book-table {
+    display: none;
+  }
+
+  .book-cards {
+    display: block;
+  }
+
+  .cards-sort {
+    display: flex;
+  }
+}

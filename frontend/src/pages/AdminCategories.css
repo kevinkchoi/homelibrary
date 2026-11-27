@@ -1,0 +1,109 @@
+.cat-page {
+  max-width: 760px;
+}
+
+.cat-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin: 0 0 14px;
+}
+
+.cat-message {
+  background: #eef4fa;
+  border: 1px solid #cfe0ef;
+  color: var(--color-primary);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin: 0 0 14px;
+}
+
+.cat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cat-row {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cat-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cat-name {
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.cat-name.none {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.cat-count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.cat-edit-btn {
+  flex-shrink: 0;
+}
+
+.cat-edit {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cat-edit input {
+  width: 100%;
+  min-height: 42px;
+}
+
+/* 자주 쓰는 분류를 한 번에 누를 수 있게 — 233종을 줄이려면 타이핑이 적어야 한다 */
+.cat-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cat-preset {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+.cat-preset:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.cat-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

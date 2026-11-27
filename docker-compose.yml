@@ -1,0 +1,76 @@
+# 같은 서버에 이 앱을 **두 벌** 띄운다(2026-11-27):
+#   ~/homelibrary-family    → 가족 공용 (LIBRARY_MODE=family)
+#   ~/homelibrary-personal  → 개인 서재 (LIBRARY_MODE=personal)
+# 폴더가 다르면 compose 프로젝트·볼륨·네트워크는 저절로 갈리지만 **container_name은 전역**이라
+# 부딪힌다. 그래서 CONTAINER_PREFIX로 앞머리를 바꾼다. 비우면 예전 이름(homelibrary-*) 그대로다.
+# 서비스 이름(homelibrary-db 등)은 바꾸지 않는다 — nginx·DATABASE_URL·backup 스크립트가 그 이름으로 찾는다.
+services:
+  homelibrary-db:
+    image: postgres:16-alpine
+    container_name: ${CONTAINER_PREFIX:-homelibrary}-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - homelibrary_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - homelibrary-net
+
+  homelibrary-api:
+    build:
+      context: ./backend
+    container_name: ${CONTAINER_PREFIX:-homelibrary}-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      ALADIN_TTB_KEY: ${ALADIN_TTB_KEY}
+      GOOGLE_BOOKS_API_KEY: ${GOOGLE_BOOKS_API_KEY}
+      KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY:-}
+      GOOGLE_CSE_ID: ${GOOGLE_CSE_ID:-}
+      GOOGLE_CSE_API_KEY: ${GOOGLE_CSE_API_KEY:-}
+      # 운영 형태 — 비우면 family(가족 공용, 예전 그대로). homelibrary.kr은 personal.
+      LIBRARY_MODE: ${LIBRARY_MODE:-family}
+      SIGNUP_INVITE_CODE: ${SIGNUP_INVITE_CODE:-}
+      USER_KEY_SECRET: ${USER_KEY_SECRET:-}
+    volumes:
+      - homelibrary_images:/app/storage/images
+    depends_on:
+      homelibrary-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - homelibrary-net
+
+  homelibrary-web:
+    build:
+      context: ./frontend
+    container_name: ${CONTAINER_PREFIX:-homelibrary}-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      - homelibrary-api
+    networks:
+      - homelibrary-net
+
+networks:
+  homelibrary-net:
+    driver: bridge
+
+volumes:
+  homelibrary_db_data:
+  homelibrary_images:

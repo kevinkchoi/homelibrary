@@ -1,0 +1,28 @@
+/* 상단 바에서 남는 자리를 채우되, 너무 길어지지 않게 상한을 둔다.
+   `min-width: 0`이 없으면 flex 항목의 최소 폭이 **내용 크기**가 되어 좁은 화면에서
+   [검색]을 밖으로 밀어낸다(placeholder가 길다). */
+.search-box {
+  display: flex;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 460px;
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.search-box .btn {
+  flex: none;
+  height: 36px;
+  padding: 0 14px;
+  white-space: nowrap;
+}

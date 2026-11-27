@@ -1,0 +1,209 @@
+.barcode-overlay {
+  position: fixed;
+  /* inset:0 이 아닌 이유는 BookDetailModal.css 설명 참고 —
+     문서가 가로로 넘치는 화면에서 inset:0 은 화면이 아니라 문서 폭으로 잡힌다. */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 내용만 안전영역 안쪽으로 — 검은 막은 화면 전체를 덮은 채로 둔다. */
+  padding: calc(16px + var(--safe-top)) calc(16px + var(--safe-right))
+           calc(16px + var(--safe-bottom)) calc(16px + var(--safe-left));
+  z-index: 1000;
+}
+
+.barcode-box {
+  background: var(--color-surface);
+  border-radius: 10px;
+  padding: 16px;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.barcode-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.barcode-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.barcode-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 4px 8px;
+}
+
+.barcode-view {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.barcode-video {
+  width: 100%;
+  height: 100%;
+  /* ⚠️ `cover`면 카메라가 보내 준 화면의 **양옆이 잘려서** 보인다. 그러면 사용자가 보는 것과
+     우리가 읽는 것이 달라져, 가늠자에 잘 맞췄는데도 인식이 안 되는 일이 생긴다.
+     `contain`이면 위아래에 검은 띠가 생기는 대신 **보이는 것이 곧 읽는 것**이 된다. */
+  object-fit: contain;
+}
+
+/* 바코드를 어디에 맞춰야 하는지 알려주는 가늠자. 바코드는 가로로 길기 때문에
+   정사각형이 아니라 가로로 긴 직사각형으로 둔다. */
+.barcode-reticle {
+  position: absolute;
+  /* 잘라서 읽는 가운데 띠(가로 90% × 세로 45%)와 대강 맞춘다. 바코드를 이 안에
+     **가로로 꽉 차게** 두는 것이 요령이라, 세로로는 넉넉히 잡았다. */
+  left: 6%;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
+}
+
+.barcode-message {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  min-height: 19px;
+  text-align: center;
+}
+
+.barcode-message.ok {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.barcode-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.barcode-actions .btn {
+  flex: 1;
+}
+
+/* 스캔해서 담은 책 목록(연속 스캔 모드) */
+.barcode-queue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.barcode-queue li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  background: var(--color-bg);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.barcode-queue .q-isbn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.barcode-queue .q-status {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.barcode-queue .q-status.fail {
+  color: var(--color-danger);
+}
+
+@supports (height: 100dvh) {
+  .barcode-overlay {
+    height: 100dvh;
+  }
+}
+
+/* ── 카메라 조작 ────────────────────────────────────────────────
+   기기가 할 수 있는 것만 나오므로, 아무것도 없으면 이 줄 자체가 렌더되지 않는다. */
+.barcode-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.barcode-zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  /* ⚠️ 흰색으로 두면 안 보인다 — 이 상자는 `--color-surface`(흰 배경)이다.
+     바깥 막이 검다고 착각해서 `#fff`로 썼다가 글자가 통째로 사라졌다. */
+  color: var(--color-text);
+}
+
+.barcode-zoom-label {
+  white-space: nowrap;
+  /* 줄어들면 글자가 잘린다(실측: 필요한 90px가 65px로 눌렸다). */
+  flex: none;
+}
+
+.barcode-zoom input[type="range"] {
+  flex: 1;
+  min-width: 0;   /* 이게 없으면 슬라이더가 줄지 않아 가로로 넘친다 */
+}
+
+.barcode-zoom-value {
+  flex: none;
+  min-width: 42px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.barcode-control-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.barcode-control-btns .btn.on {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+/* 정말 훑고 있는지 보여 주는 줄. 화면이 조용할 때 "멈춘 것인지 못 읽는 것인지"를
+   가릴 수 있어야 한다(제보를 받을 때도 이 숫자가 단서가 된다). */
+.barcode-engine {
+  margin: -4px 0 0;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}

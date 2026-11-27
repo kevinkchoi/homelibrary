@@ -1,0 +1,32 @@
+/* 서식 단추 줄 — 입력칸 바로 위에 붙어 다닌다.
+   폰에서는 한 줄에 다 안 들어가므로 접어 내린다(가로 스크롤은 만들지 않는다 —
+   문서가 가로로 넘치면 레이아웃이 통째로 어긋난다). */
+.md-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.md-toolbar-btn {
+  padding: 6px 10px;
+  font-size: 12.5px;
+  line-height: 1.2;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  white-space: nowrap;
+  /* 폰에서 손가락으로 누를 수 있는 최소 크기 */
+  min-height: 32px;
+}
+
+.md-toolbar-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.md-toolbar-btn:active {
+  background: var(--color-bg);
+}

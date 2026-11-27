@@ -1,0 +1,248 @@
+.filter-bar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* 접힌 상태의 한 줄. 줄 전체가 버튼이라 어디를 눌러도 펼쳐진다
+   (세모만 누르게 하면 표적이 너무 작다 — 폰이 주 사용처다). */
+.filter-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  height: 40px;
+  padding: 0 6px 0 11px;
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--color-text);
+  font: inherit;
+}
+
+.filter-label {
+  flex: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* 접혀 있을 때는 한 줄을 지킨다. 넘치는 칩은 JSX 쪽에서 `+N`으로 접어 두므로
+   여기서 잘려 나가는 일은 없다(잘린 칩은 그 ✕를 누를 수 없어 지울 길이 사라진다). */
+.filter-chips {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 5px;
+  overflow: hidden;
+}
+
+/* 펼치면 전부 보여 준다 — 줄바꿈을 허용하고 머리줄 높이도 따라 늘린다. */
+.filter-bar.open .filter-chips {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.filter-bar.open .filter-top {
+  height: auto;
+  min-height: 40px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  align-items: flex-start;
+}
+
+.filter-bar.open .filter-label,
+.filter-bar.open .filter-caret {
+  /* 칩이 여러 줄이 되어도 라벨과 세모는 첫 줄에 맞춰 둔다 */
+  padding-top: 2px;
+}
+
+/* 접힌 줄에서 다 못 보여 준 개수 */
+.filter-chip-more {
+  padding: 2px 9px;
+  font-weight: 600;
+  flex: none;   /* 이 칩까지 줄어들면 "몇 개 더 있는지"를 못 읽는다 */
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  /* **줄어들 수 있어야 한다.** `flex: none`이면 긴 책꽂이 이름이 화면을 넘어가고,
+     그 칩의 ✕가 화면 밖으로 나가 **지울 방법이 사라진다**(실제로 그랬다).
+     글자는 말줄임으로 접고 ✕는 항상 남긴다. */
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 11.5px;
+  color: var(--color-primary);
+  background: #eef4fa;
+  border: 1px solid #cfe0ef;
+  border-radius: 999px;
+  padding: 2px 4px 2px 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filter-chip b {
+  font-weight: 600;
+}
+
+.filter-chip-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 펼치면 줄바꿈되므로 말줄임 없이 전부 보여 준다 */
+.filter-bar.open .filter-chip-text {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.filter-bar.open .filter-chip {
+  flex: none;
+}
+
+.filter-chip-x {
+  flex: none;
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.filter-chip-x:hover {
+  background: #d8e6f3;
+}
+
+.filter-none {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: #9aa3af;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-caret {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  transition: transform 0.16s;
+}
+
+.filter-bar.open .filter-caret {
+  transform: rotate(180deg);
+}
+
+/* 펼쳤을 때만 보이는 입력칸. `auto-fit`이라 넓은 화면에서는 한 줄에 4개가 놓이고
+   좁으면 2개씩 접힌다 — 폭을 재지 않고 CSS가 알아서 한다. */
+.filter-fields {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  padding: 11px;
+  border-top: 1px solid var(--color-border);
+}
+
+.filter-bar.open .filter-fields {
+  display: grid;
+}
+
+.filter-fields input {
+  height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.filter-reset {
+  grid-column: 1 / -1;
+  justify-self: start;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 7px 12px;
+}
+
+/* ── 책꽂이 다중 선택 ──────────────────────────────────────────────
+   펼친 칸 안에만 보인다. 접혀 있을 때는 위쪽 칩 줄이 고른 것을 알려준다. */
+.filter-shelves {
+  display: none;
+  padding: 0 10px 10px;
+}
+
+.filter-bar.open .filter-shelves {
+  display: block;
+}
+
+.filter-shelves-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.filter-shelf-clear {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 12px;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.filter-shelf-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-shelf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 13px;
+  cursor: pointer;
+  /* 이름이 길어도 줄바꿈으로 칩이 세로로 늘어지지 않게 */
+  white-space: nowrap;
+}
+
+.filter-shelf.on {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.filter-shelf-count {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.filter-shelf.on .filter-shelf-count {
+  opacity: 0.85;
+}

@@ -1,0 +1,85 @@
+.scan-batch-review {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scan-batch-summary {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.scan-batch-card-body {
+  display: flex;
+  gap: 16px;
+}
+
+.scan-batch-thumb-btn {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.scan-batch-thumb {
+  width: 90px;
+  height: 120px;
+  object-fit: contain;
+  background: #f5f7fa;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  display: block;
+}
+
+.scan-batch-thumb-zoom {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px 4px;
+  border-radius: 4px;
+}
+
+.scan-batch-form-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.scan-batch-done {
+  color: #1e7a34;
+  font-weight: 600;
+  margin: 0;
+}
+
+.scan-batch-skipped {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.scan-batch-footer {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 24px;
+}
+
+@media (max-width: 640px) {
+  .scan-batch-card-body {
+    flex-direction: column;
+  }
+
+  .scan-batch-thumb-btn,
+  .scan-batch-thumb {
+    width: 100%;
+  }
+
+  .scan-batch-thumb {
+    height: 160px;
+  }
+}

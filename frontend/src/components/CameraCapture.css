@@ -1,0 +1,60 @@
+.camera-capture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.shutter-btn-standalone {
+  border-radius: 999px;
+  padding: 14px 32px;
+  font-size: 16px;
+}
+
+.shot-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 420px;
+}
+
+.shot-thumb {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.shot-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+.shot-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-danger);
+  color: white;
+  font-size: 11px;
+  line-height: 1;
+  padding: 0;
+}
+
+.camera-batch-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shot-count {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}

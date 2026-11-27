@@ -1,0 +1,24 @@
+# 환경변수 (비밀번호/API 키 포함 — 절대 커밋하지 않음)
+.env
+# 서버 .env 로컬 백업 (git에 올리지 않음)
+.env.server.backup
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node / Vite
+node_modules/
+dist/
+frontend/.vite/
+
+# Claude Code 로컬 설정 (기기별 권한 목록 — 공유하지 않음)
+.claude/settings.local.json
+
+# OS
+.DS_Store
+
+# 책 표지 이미지 로컬 저장 경로 (실제로는 Docker volume에 있지만 혹시 로컬 실행 시 대비)
+backend/storage/

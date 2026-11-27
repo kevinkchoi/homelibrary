@@ -1,0 +1,80 @@
+/* `sticky`인 이유와 `fixed`를 버린 경위는 NavBar.jsx 주석 참고.
+   문서 흐름 안에 있으므로 body에 위쪽 여백을 줄 필요가 없다. */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  /* 높이를 **여기**(테두리를 가진 쪽)에 준다. `* { box-sizing: border-box }`라 1px 테두리가
+     이 안에 포함되어 바깥에서 잰 높이가 정확히 --hdr-h가 된다.
+     안쪽(.navbar-inner)에 주면 테두리만큼 1px 커져서, 그 값을 그대로 쓰는 표 머리글이
+     1px 가려진다(실측으로 잡았다). */
+  /* 상태바가 덮는 만큼 안쪽으로 밀어 준다. `box-sizing: border-box`라 전체 높이는
+     --hdr-total 이 되고, 내용은 그 아래 --hdr-h 만큼을 쓴다. */
+  height: var(--hdr-total);
+  padding-top: var(--safe-top);
+  /* 상단 바 아래에 옅은 그림자 — 책 목록이 그 밑으로 지나간다는 것이 한눈에 보이고,
+     혹시 경계에 1px 틈이 생겨도 눈에 띄지 않는다. */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* 한 줄을 지킨다. 접히면 높이가 변해 표 머리글(--hdr-h)과 어긋난다. */
+  flex-wrap: nowrap;
+  padding: 8px 12px;
+  max-width: 1500px;
+  margin: 0 auto;
+  height: 100%;
+  /* 내용이 57px를 넘으면 **바깥으로 삐져나와** 아래 책 목록 위에 그려진다.
+     글꼴이 크게 설정된 환경 등에서 그럴 수 있어 잘라 둔다. 표 머리글이 상단 바 높이를
+     상수(--hdr-h)로 믿고 그 아래 붙기 때문에, 높이는 무슨 일이 있어도 변하면 안 된다. */
+  overflow: hidden;
+}
+
+/* 메뉴(사이드바) 여는 단추. 손가락으로 누르므로 40px 이상 */
+.navbar-toggle {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  font-size: 17px;
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.navbar-toggle:hover {
+  background: var(--color-bg);
+}
+
+.navbar-brand {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.navbar-logo {
+  font-size: 17px;
+  line-height: 1;
+}
+
+/* 430px 이하에서는 앱 이름 글자를 숨긴다 — ☰ + 이름 + 검색창을 한 줄에 다 넣을 자리가
+   없기 때문. 📚 아이콘은 남으므로 홈으로 가는 길은 그대로다.
+   (미디어 쿼리를 믿을 수 있는 이유: 이제 문서가 가로로 넘치지 않는다. 넘치던 시절에는
+    레이아웃 뷰포트가 656px로 부풀어 미디어 쿼리가 화면 폭과 어긋났다) */
+@media (max-width: 430px) {
+  .navbar-brand-text {
+    display: none;
+  }
+}

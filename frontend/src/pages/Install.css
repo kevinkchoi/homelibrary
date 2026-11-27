@@ -1,0 +1,90 @@
+.install-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 8px 0 40px;
+}
+
+.install-page h1 {
+  font-size: 22px;
+  margin: 0 0 16px;
+}
+
+.install-already {
+  background: #eef6ee;
+  border: 1px solid #cfe3cf;
+  color: #2f6b34;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.install-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.install-card h2 {
+  margin: 0 0 10px;
+  font-size: 17px;
+}
+
+/* 이 단계를 건너뛰면 설치하고도 앱이 안 열린다 — 눈에 띄게 둔다 */
+.install-prereq {
+  border-left: 3px solid var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
+.install-prereq h2 {
+  color: var(--color-warning-text);
+}
+
+.install-lead,
+.install-prereq p {
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0 0 8px;
+  color: var(--color-text);
+}
+
+.install-download {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  text-decoration: none;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.install-meta {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.install-card ol {
+  margin: 0;
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--color-text);
+}
+
+.install-note {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.install-back {
+  font-size: 14px;
+  margin-top: 8px;
+}

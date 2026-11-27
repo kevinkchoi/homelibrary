@@ -1,0 +1,180 @@
+.cleanup-section {
+  margin-bottom: 20px;
+}
+
+.cleanup-section h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+.cleanup-count {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.cleanup-desc {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.cleanup-empty {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.cleanup-result {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--color-primary);
+}
+
+.cleanup-group {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.cleanup-group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.cleanup-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* ISBN 일치는 확실한 중복이라 강하게, 제목 일치는 확인이 필요하므로 주의색으로 구분 */
+.cleanup-badge.isbn {
+  background: #fdecec;
+  color: var(--color-danger);
+}
+
+.cleanup-badge.title {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.cleanup-group-key {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.cleanup-note {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.cleanup-ack-line {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.cleanup-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cleanup-ack-all {
+  margin-bottom: 14px;
+}
+
+/* 묶음별 [이건 다른 책입니다] — 삭제 버튼과 섞이지 않게 묶음 아래 오른쪽에 둔다 */
+.cleanup-group-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.cleanup-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cleanup-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--color-bg);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.cleanup-thumb {
+  width: 42px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.cleanup-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  font-size: 22px;
+}
+
+.cleanup-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cleanup-title {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.cleanup-title:hover {
+  text-decoration: underline;
+}
+
+.cleanup-sub {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.cleanup-del {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+@media (max-width: 640px) {
+  .cleanup-row {
+    flex-wrap: wrap;
+  }
+  .cleanup-del {
+    align-self: flex-start;
+  }
+}

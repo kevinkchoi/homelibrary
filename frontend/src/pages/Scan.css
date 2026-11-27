@@ -1,0 +1,46 @@
+.scan-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.scan-page h1 {
+  font-size: 20px;
+  margin-bottom: 0;
+}
+
+.scan-desc {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin: 0 0 12px;
+  max-width: 420px;
+}
+
+.scan-mode-select {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 12px;
+}
+
+.scan-mode-btn {
+  padding: 16px;
+  font-size: 16px;
+}
+
+.scan-processing {
+  padding: 32px 0;
+  color: var(--color-text-muted);
+}
+
+/* personal 모드에서 Claude 키가 없을 때 사진 버튼 대신 보이는 안내 */
+.scan-ai-hint {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 4px 0 0;
+}

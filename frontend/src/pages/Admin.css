@@ -1,0 +1,28 @@
+.admin-page h1 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.admin-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.admin-card {
+  text-decoration: none;
+  color: var(--color-text);
+  display: block;
+}
+
+.admin-card h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: var(--color-primary);
+}
+
+.admin-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
